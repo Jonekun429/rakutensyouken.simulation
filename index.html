@@ -1,0 +1,2756 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ポートフォリオ総合分析ダッシュボード</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #10b981;
+            --dark-green: #059669;
+            --light-green: #d1fae5;
+            --accent-green: #34d399;
+            --bg-main: #f0fdf4;
+            --bg-card: #ffffff;
+            --text-primary: #064e3b;
+            --text-secondary: #047857;
+            --text-muted: #6b7280;
+            --border-color: #a7f3d0;
+            --shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
+            --shadow-hover: 0 8px 30px rgba(16, 185, 129, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border: 2px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-green), var(--accent-green), var(--primary-green));
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .fear-greed-widget {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 16px;
+            border: 2px solid var(--border-color);
+            min-width: 0;
+            flex: 0 0 auto;
+            max-width: 580px;
+            width: 100%;
+        }
+
+        .fgi-top-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .fgi-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .fgi-right {
+            flex: 0 0 160px;
+        }
+
+        .fear-greed-label {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1f2937;
+            font-family: Arial, sans-serif;
+            line-height: 1.2;
+        }
+
+        .fear-greed-subtitle {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .fgi-score-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fear-greed-number {
+            font-size: 48px;
+            font-weight: 900;
+            font-family: Arial, sans-serif;
+            line-height: 1;
+        }
+
+        .fgi-status-col {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .fear-greed-status {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .fgi-comparison {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .fear-greed-gauge-container {
+            width: 160px;
+        }
+
+        .fear-greed-gauge-container svg {
+            width: 100%;
+            height: auto;
+        }
+
+        /* 7指標：2列グリッド */
+        .fgi-indicators {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 16px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .fgi-indicator-row {
+            margin-bottom: 0;
+        }
+
+        .fgi-ind-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3px;
+        }
+
+        .fgi-ind-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .fgi-ind-score {
+            font-size: 12px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .fgi-bar-bg {
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 1px;
+        }
+
+        .fgi-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.8s ease;
+        }
+
+        .fgi-ind-desc {
+            font-size: 9px;
+            color: var(--text-muted);
+        }
+
+        .upload-section {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .file-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .file-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--light-green);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 4px solid var(--primary-green);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .info-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-card li {
+            padding: 8px 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card li::before {
+            content: '✓';
+            color: var(--primary-green);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            padding: 28px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--accent-green));
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1.2;
+        }
+
+        .card-value.positive {
+            color: var(--primary-green);
+        }
+
+        .card-value.negative {
+            color: #ef4444;
+        }
+
+        .card-value.score {
+            font-size: 56px;
+        }
+
+        .score-grade {
+            display: inline-block;
+            margin-left: 12px;
+            font-size: 32px;
+            font-weight: 800;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* 市場分析セクション */
+        .market-analysis {
+            background: white;
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .market-analysis h2 {
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .analysis-section {
+            background: linear-gradient(135deg, var(--light-green), white);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .analysis-section h3 {
+            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analysis-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        .analysis-highlight {
+            background: #fef3c7;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            color: #92400e;
+        }
+
+        .strategy-list {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 12px;
+        }
+
+        .strategy-list li {
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            border-left: 3px solid var(--primary-green);
+        }
+
+        .strategy-list li::before {
+            content: '▶';
+            color: var(--primary-green);
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* 業界サマリー */
+        .industry-summary {
+            background: white;
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        .industry-summary h2 {
+            color: var(--text-primary);
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .industry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .industry-item {
+            background: linear-gradient(135deg, var(--light-green), white);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .industry-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-green);
+        }
+
+        .industry-item:active {
+            transform: translateY(0);
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .modal-header h2 {
+            color: var(--text-primary);
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 32px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: var(--light-green);
+            color: var(--text-primary);
+        }
+
+        .stock-list-item {
+            padding: 20px;
+            border-radius: 12px;
+            background: var(--light-green);
+            margin-bottom: 15px;
+            transition: all 0.2s;
+        }
+
+        .stock-list-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+
+        .stock-list-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--primary-green);
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .stock-list-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .stock-list-details {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .stock-list-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .stock-list-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stock-list-value {
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .industry-item-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .industry-item-count {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-green);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 4px;
+        }
+
+        .industry-item-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .analysis-tabs {
+            background: white;
+            border-radius: 20px;
+            padding: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 8px;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 120px;
+            padding: 14px 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .tab-button:hover:not(.active) {
+            background: var(--light-green);
+            color: var(--text-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stock-table {
+            background: var(--bg-card);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border: 2px solid var(--border-color);
+        }
+
+        .table-header {
+            padding: 28px;
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+            color: white;
+        }
+
+        .table-header h2 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .table-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--light-green);
+        }
+
+        th {
+            padding: 18px 16px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        td {
+            padding: 20px 16px;
+            border-bottom: 1px solid #f0fdf4;
+            color: var(--text-primary);
+            font-size: 15px;
+        }
+
+        tr:hover {
+            background: var(--light-green);
+        }
+
+        .stock-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--primary-green);
+            font-size: 16px;
+        }
+
+        .stock-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .account-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .account-tokutei { background: #dbeafe; color: #1e40af; }
+        .account-nisa-tsumitate { background: #fef3c7; color: #92400e; }
+        .account-nisa-growth { background: #fce7f3; color: #9f1239; }
+        .account-ideco { background: #e0e7ff; color: #4338ca; }
+
+        .industry-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .industry-不動産 { background: #fef3c7; color: #92400e; }
+        .industry-建設 { background: #ddd6fe; color: #5b21b6; }
+        .industry-金融 { background: #dbeafe; color: #1e40af; }
+        .industry-食品 { background: #fce7f3; color: #9f1239; }
+        .industry-サービス { background: #e0e7ff; color: #3730a3; }
+        .industry-IT { background: #cffafe; color: #155e75; }
+        .industry-製造 { background: #fed7aa; color: #9a3412; }
+        .industry-化学 { background: #e0e7ff; color: #4338ca; }
+        .industry-機械 { background: #fecaca; color: #991b1b; }
+        .industry-小売 { background: #fef9c3; color: #713f12; }
+        .industry-商社 { background: #d1fae5; color: #065f46; }
+        .industry-医薬品 { background: #fbcfe8; color: #831843; }
+        .industry-エンタメ { background: #fce7f3; color: #9f1239; }
+        .industry-インフラ { background: #ccfbf1; color: #115e59; }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .badge.strong-buy {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .badge.buy {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge.hold {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .positive-value {
+            color: var(--primary-green);
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .negative-value {
+            color: #ef4444;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .action-cell {
+            font-weight: 700;
+            color: var(--text-primary);
+            min-width: 120px;
+        }
+
+        .action-cell.empty {
+            color: var(--text-muted);
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .reason-cell {
+            max-width: 300px;
+            line-height: 1.5;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .reason-highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-container.auto-height {
+            height: auto;
+            min-height: 600px;
+        }
+
+        .chart-container h2 {
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            font-size: 22px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .chart-container p {
+            flex-shrink: 0;
+        }
+
+        .chart-wrapper {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+        }
+
+        .chart-wrapper canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .dividend-calendar {
+            background: var(--bg-card);
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+        }
+
+        .dividend-calendar-header {
+            margin-bottom: 8px;
+        }
+
+        .dividend-calendar-header h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .dividend-notice {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin: 12px 0;
+            font-size: 12px;
+            color: #92400e;
+            line-height: 1.6;
+        }
+
+        .dividend-notice strong { font-weight: 700; }
+
+        /* 年間合計バナー */
+        .dividend-total-banner {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .dividend-total-left .total-label {
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.85;
+            margin-bottom: 4px;
+        }
+
+        .dividend-total-left .total-amount {
+            font-size: 36px;
+            font-weight: 900;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+        }
+
+        .dividend-total-left .total-subtitle {
+            font-size: 12px;
+            opacity: 0.75;
+            margin-top: 4px;
+        }
+
+        .dividend-total-right {
+            text-align: right;
+        }
+
+        .dividend-total-right .after-tax-label {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-bottom: 4px;
+        }
+
+        .dividend-total-right .after-tax-amount {
+            font-size: 28px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .dividend-total-right .tax-note {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        /* 月グリッド：4列×3行 */
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .month-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            .month-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .month-card {
+            border-radius: 14px;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+        }
+
+        .month-card.has-dividend {
+            background: white;
+            border-color: #10b981;
+        }
+
+        .month-card.has-dividend:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(16,185,129,0.2);
+        }
+
+        .month-card.no-dividend {
+            background: #f9fafb;
+            border-color: #e5e7eb;
+            opacity: 0.6;
+        }
+
+        /* 月ラベル */
+        .mc-month {
+            font-size: 12px;
+            font-weight: 700;
+            color: #6b7280;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .month-card.has-dividend .mc-month {
+            color: #059669;
+        }
+
+        /* 主要金額（税引前） */
+        .mc-main-amount {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1.1;
+            margin-bottom: 2px;
+        }
+
+        .mc-main-label {
+            font-size: 10px;
+            color: #9ca3af;
+            margin-bottom: 8px;
+        }
+
+        /* 仕切り線 */
+        .mc-divider {
+            border: none;
+            border-top: 1px dashed #e5e7eb;
+            margin: 8px 0;
+        }
+
+        /* 税引後金額 */
+        .mc-after-amount {
+            font-size: 15px;
+            font-weight: 700;
+            color: #10b981;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .mc-after-label {
+            font-size: 10px;
+            color: #9ca3af;
+        }
+
+        /* 配当なしカード */
+        .mc-no-div-text {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-top: 8px;
+        }
+
+        /* 今月ハイライト */
+        .month-card.current-month {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+
+        .month-card.current-month .mc-month::after {
+            content: ' ← 今月';
+            color: #3b82f6;
+            font-size: 10px;
+        }
+
+        /* 配当株リスト */
+        .mc-stocks-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 11px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+
+        .month-card:hover .mc-stocks-tooltip {
+            opacity: 1;
+        }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 2px dashed var(--border-color);
+        }
+
+        .no-data-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            opacity: 0.5;
+        }
+
+        .no-data h3 {
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 24px;
+        }
+
+        .no-data p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+            
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 400px;
+            }
+            
+            .fear-greed-widget {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="animate-in">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1>💰 ポートフォリオ総合分析</h1>
+                    <p class="subtitle">楽天証券のデータを一括管理・可視化</p>
+                </div>
+                
+                <!-- Fear & Greed: コンパクト横並びレイアウト -->
+                <div class="fear-greed-widget" id="fearGreedWidget">
+                    <div class="fgi-top-row">
+                        <div class="fgi-left">
+                            <div class="fear-greed-label">Fear &amp; Greed Index</div>
+                            <div class="fear-greed-subtitle">市場の感情指数（CNN公式）</div>
+                            <div class="fgi-score-row">
+                                <div class="fear-greed-number" id="fearGreedValue">--</div>
+                                <div class="fgi-status-col">
+                                    <div class="fear-greed-status" id="fearGreedStatus">読み込み中...</div>
+                                    <div class="fgi-comparison" id="fgiComparison"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fgi-right">
+                            <div class="fear-greed-gauge-container">
+                                <svg id="fgSvg" viewBox="0 0 300 170" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M 30 150 A 120 120 0 0 1 72.4 42.8" fill="none" stroke="#e05c5c" stroke-width="28" stroke-linecap="butt" opacity="0.25" id="arc0"/>
+                                    <path d="M 72.4 42.8 A 120 120 0 0 1 130 18.3" fill="none" stroke="#f0a050" stroke-width="28" stroke-linecap="butt" opacity="0.25" id="arc1"/>
+                                    <path d="M 130 18.3 A 120 120 0 0 1 170 18.3" fill="none" stroke="#d4c44a" stroke-width="28" stroke-linecap="butt" opacity="0.25" id="arc2"/>
+                                    <path d="M 170 18.3 A 120 120 0 0 1 227.6 42.8" fill="none" stroke="#8bc44a" stroke-width="28" stroke-linecap="butt" opacity="0.25" id="arc3"/>
+                                    <path d="M 227.6 42.8 A 120 120 0 0 1 270 150" fill="none" stroke="#4aaa6a" stroke-width="28" stroke-linecap="butt" opacity="0.25" id="arc4"/>
+                                    <text x="24" y="158" font-size="10" fill="#9ca3af" font-family="Arial" text-anchor="middle">0</text>
+                                    <text x="68" y="52" font-size="9" fill="#9ca3af" font-family="Arial" text-anchor="middle">25</text>
+                                    <text x="150" y="16" font-size="9" fill="#9ca3af" font-family="Arial" text-anchor="middle">50</text>
+                                    <text x="232" y="52" font-size="9" fill="#9ca3af" font-family="Arial" text-anchor="middle">75</text>
+                                    <text x="276" y="158" font-size="10" fill="#9ca3af" font-family="Arial" text-anchor="middle">100</text>
+                                    <line id="gaugeNeedle" x1="150" y1="150" x2="150" y2="40" stroke="#1f2937" stroke-width="4" stroke-linecap="round" transform="rotate(-90, 150, 150)"/>
+                                    <circle cx="150" cy="150" r="10" fill="#1f2937"/>
+                                    <circle cx="150" cy="150" r="6" fill="white"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 7指標：横2列グリッド -->
+                    <div class="fgi-indicators" id="fgiIndicators">
+                        <div style="color:#9ca3af;font-size:12px;padding:8px 0">指標データ読み込み中...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="upload-section">
+                <div class="file-input-wrapper">
+                    <label class="file-label">
+                        <span>📊</span>
+                        <span>楽天証券CSV</span>
+                        <input type="file" id="csvFileInput" accept=".csv" multiple />
+                    </label>
+                </div>
+                <div id="uploadStatus"></div>
+            </div>
+        </header>
+
+        <div class="info-card animate-in" style="animation-delay: 0.1s;">
+            <h3>📚 このダッシュボードでできること</h3>
+            <ul>
+                <li>株式・投資信託・iDeCo・外国株式を一括で管理・分析</li>
+                <li>どの投資がいくら儲かっているか一目で確認</li>
+                <li>業界別の投資状況を可視化（何件投資しているか表示）</li>
+                <li>どの株を買い増しすべきか、AIが教えてくれる</li>
+                <li>配当金の予測（株式のみ）</li>
+                <li>市場全体の雰囲気（恐怖と強欲指数）をリアルタイム表示</li>
+            </ul>
+        </div>
+
+        <div id="dashboard" style="display: none;">
+            <div class="summary-cards">
+                <div class="card animate-in" style="animation-delay: 0.2s;">
+                    <span class="card-icon">💎</span>
+                    <div class="card-title">総資産評価額</div>
+                    <div class="card-value" id="totalValue">¥0</div>
+                    <div class="card-subtitle">今、全部売ったらこの金額</div>
+                </div>
+                <div class="card animate-in" style="animation-delay: 0.3s;">
+                    <span class="card-icon">📈</span>
+                    <div class="card-title">評価損益</div>
+                    <div class="card-value" id="totalProfit">¥0</div>
+                    <div class="card-subtitle" id="profitSubtitle">買った時より増えた金額</div>
+                </div>
+                <div class="card animate-in" style="animation-delay: 0.4s;">
+                    <span class="card-icon">🎯</span>
+                    <div class="card-title">リターン率</div>
+                    <div class="card-value" id="profitRate">0%</div>
+                    <div class="card-subtitle">投資効率の指標</div>
+                </div>
+                <div class="card animate-in" style="animation-delay: 0.5s;">
+                    <span class="card-icon">💵</span>
+                    <div class="card-title">年間配当金（税引前）</div>
+                    <div class="card-value positive" id="annualDividendBefore">¥0</div>
+                    <div class="card-subtitle">源泉徴収前の配当金</div>
+                </div>
+                <div class="card animate-in" style="animation-delay: 0.6s;">
+                    <span class="card-icon">💰</span>
+                    <div class="card-title">年間配当金（税引後）</div>
+                    <div class="card-value positive" id="annualDividendAfter">¥0</div>
+                    <div class="card-subtitle">実際に受け取る金額</div>
+                </div>
+                <div class="card animate-in" style="animation-delay: 0.7s;">
+                    <span class="card-icon">⭐</span>
+                    <div class="card-title">ポートフォリオ評価</div>
+                    <div class="card-value score" id="portfolioScore">--<span class="score-grade" id="portfolioGrade"></span></div>
+                    <div class="card-subtitle" id="scoreComment">分析中...</div>
+                </div>
+            </div>
+
+            <div class="market-analysis animate-in" style="animation-delay: 0.8s;">
+                <h2>🌍 本日の市場状況と今月の投資戦略</h2>
+                <div id="marketAnalysisContent">
+                    <p style="color: var(--text-muted); text-align: center;">データ分析中...</p>
+                </div>
+            </div>
+
+            <div class="industry-summary animate-in" style="animation-delay: 0.6s;" id="industrySummary">
+                <h2>🏢 業界別投資サマリー</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 14px;">どの業界に何銘柄投資しているか</p>
+                <div class="industry-grid" id="industryGrid"></div>
+            </div>
+
+            <div class="analysis-tabs animate-in" style="animation-delay: 0.7s;">
+                <button class="tab-button active" onclick="switchTab('domestic')">🏠 国内株式</button>
+                <button class="tab-button" onclick="switchTab('foreign')">🌎 外国株式</button>
+                <button class="tab-button" onclick="switchTab('funds')">📊 投信・iDeCo</button>
+                <button class="tab-button" onclick="switchTab('analysis')">🔍 詳細分析</button>
+                <button class="tab-button" onclick="switchTab('dividend')">💰 配当予測</button>
+            </div>
+
+            <div id="domesticTab" class="tab-content active">
+                <div class="stock-table animate-in" style="animation-delay: 0.8s;">
+                    <div class="table-header">
+                        <h2>🏠 国内株式</h2>
+                        <p>日本企業の保有銘柄一覧</p>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>銘柄</th>
+                                    <th>業界</th>
+                                    <th>保有数</th>
+                                    <th>平均取得額</th>
+                                    <th>現在価格</th>
+                                    <th>評価損益</th>
+                                    <th>損益率</th>
+                                    <th>時価評価額</th>
+                                    <th>アドバイス</th>
+                                    <th>推奨アクション</th>
+                                    <th>分析理由</th>
+                                </tr>
+                            </thead>
+                            <tbody id="domesticTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="foreignTab" class="tab-content">
+                <div class="stock-table animate-in">
+                    <div class="table-header" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
+                        <h2>🌎 外国株式</h2>
+                        <p>米国株などの保有銘柄一覧</p>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ティッカー</th>
+                                    <th>銘柄名</th>
+                                    <th>保有数</th>
+                                    <th>平均取得額</th>
+                                    <th>現在価格</th>
+                                    <th>評価損益</th>
+                                    <th>損益率</th>
+                                    <th>時価評価額</th>
+                                    <th>アドバイス</th>
+                                    <th>推奨アクション</th>
+                                    <th>分析理由</th>
+                                </tr>
+                            </thead>
+                            <tbody id="foreignTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="fundsTab" class="tab-content">
+                <div class="stock-table animate-in">
+                    <div class="table-header" style="background: linear-gradient(135deg, #ec4899, #f43f5e);">
+                        <h2>📊 投資信託・iDeCo</h2>
+                        <p>保有ファンドの一覧とパフォーマンス（特定・NISA・iDeCo）</p>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ファンド名</th>
+                                    <th>口座</th>
+                                    <th>保有口数</th>
+                                    <th>平均取得額</th>
+                                    <th>基準価額</th>
+                                    <th>評価損益</th>
+                                    <th>損益率</th>
+                                    <th>時価評価額</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fundsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="analysisTab" class="tab-content">
+                <div class="chart-grid">
+                    <div class="chart-container animate-in">
+                        <h2>📊 資産分類</h2>
+                        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">国内株・外国株・投資信託の割合</p>
+                        <div class="chart-wrapper">
+                            <canvas id="assetTypeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container animate-in" style="animation-delay: 0.1s;">
+                        <h2>💼 業界別投資額（国内株）</h2>
+                        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">どの業界にいくら投資しているか</p>
+                        <div class="chart-wrapper">
+                            <canvas id="industryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-grid">
+                    <div class="chart-container animate-in" style="animation-delay: 0.2s;" class="auto-height">
+                        <h2>🏆 国内株パフォーマンス</h2>
+                        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">全銘柄の損益率ランキング</p>
+                        <div class="chart-wrapper">
+                            <canvas id="domesticPerformanceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container animate-in auto-height" style="animation-delay: 0.3s;">
+                        <h2>🏆 外国株パフォーマンス</h2>
+                        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">全銘柄の損益率ランキング</p>
+                        <div class="chart-wrapper">
+                            <canvas id="foreignPerformanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dividendTab" class="tab-content">
+                <div class="dividend-calendar animate-in">
+                    <div class="dividend-calendar-header">
+                        <h2>📅 月別配当金カレンダー</h2>
+                        <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">あなたが毎月いくら受け取れるかの予測です</p>
+                    </div>
+
+                    <div class="dividend-notice">
+                        <strong>⚠️ 計算方法について（iGrowとの差異）</strong><br>
+                        このツールは <strong>「評価額 × 配当利回り推定値」</strong> で計算しています。
+                        iGrow等のアプリは <strong>「1株あたり配当額 × 保有株数」</strong> の実績値を使うため金額が異なります。
+                        あくまで<strong>おおよその目安</strong>としてご利用ください。
+                    </div>
+
+                    <!-- 年間合計バナー -->
+                    <div class="dividend-total-banner" id="dividendTotalBanner">
+                        <div class="dividend-total-left">
+                            <div class="total-label">📊 年間配当予測（税引前）</div>
+                            <div class="total-amount" id="divTotalBefore">¥--</div>
+                            <div class="total-subtitle">国内株式の配当合計</div>
+                        </div>
+                        <div class="dividend-total-right">
+                            <div class="after-tax-label">🏦 実際に受け取れる額</div>
+                            <div class="after-tax-amount" id="divTotalAfter">¥--</div>
+                            <div class="tax-note">税率 20.315% 控除後</div>
+                        </div>
+                    </div>
+
+                    <!-- 12ヶ月グリッド -->
+                    <div class="month-grid" id="monthlyDividend"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="noData" class="no-data animate-in">
+            <div class="no-data-icon">📊</div>
+            <h3>まだデータがありません</h3>
+            <p>楽天証券からダウンロードしたCSVファイルをアップロードしてください</p>
+            <p style="margin-top: 10px; font-size: 14px;">複数のファイルを同時選択可能です</p>
+        </div>
+
+        <!-- モーダル -->
+        <div id="industryModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalIndustryName">-</h2>
+                    <button class="modal-close" onclick="closeIndustryModal()">×</button>
+                </div>
+                <div id="modalStockList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // データ保存用（分類ごと）
+        let domesticStocksData = []; // 国内株式
+        let foreignStocksData = [];  // 外国株式（米国株など）
+        let fundsData = [];          // 投資信託
+        
+        // 統合データ
+        let allStocksData = [];
+        
+        // 市場心理指数
+        let fearGreedIndex = null;
+        
+        // 充実した業界データベース（配当利回りと配当月を追加）
+        const industryDatabase = {
+            '1343': { name: '不動産', dividend: 3.5, months: [2, 8] }, // NFJ-REIT
+            '1414': { name: '建設', dividend: 3.2, months: [3, 9] }, // ショーボンドHD
+            '1489': { name: '金融', dividend: 4.0, months: [1, 4, 7, 10] }, // 日経高配当50 (毎月型と仮定)
+            '1928': { name: '建設', dividend: 4.5, months: [1, 7] }, // 積水ハウス
+            '1951': { name: '建設', dividend: 3.8, months: [3, 9] }, // エクシオグループ
+            '2003': { name: '食品', dividend: 2.8, months: [3, 9] }, // 日東富士製粉
+            '2124': { name: 'サービス', dividend: 2.5, months: [12] }, // JAC Recruitment
+            '2169': { name: 'IT', dividend: 3.0, months: [3, 9] }, // CDS
+            '2185': { name: 'IT', dividend: 3.5, months: [3, 9] }, // シイエム・シイ
+            '2269': { name: '食品', dividend: 2.2, months: [3, 9] }, // 明治HD
+            '2317': { name: 'IT', dividend: 2.0, months: [3] }, // システナ
+            '2391': { name: 'サービス', dividend: 3.8, months: [3, 9] }, // プラネット
+            '2462': { name: 'サービス', dividend: 2.7, months: [3, 9] }, // ライク
+            '2502': { name: '食品', dividend: 3.5, months: [12] }, // アサヒグループHD
+            '2659': { name: '小売', dividend: 2.8, months: [2, 8] }, // サンエー
+            '3003': { name: '不動産', dividend: 3.5, months: [12] }, // ヒューリック
+            '3053': { name: 'サービス', dividend: 2.0, months: [12] }, // ペッパーフードサービス
+            '3076': { name: 'サービス', dividend: 3.2, months: [3, 9] }, // あいHD
+            '3231': { name: '不動産', dividend: 3.8, months: [3, 9] }, // 野村不動産
+            '3333': { name: '小売', dividend: 2.5, months: [2, 8] }, // あさひ
+            '3771': { name: 'IT', dividend: 2.8, months: [3] }, // システムリサーチ
+            '3817': { name: 'IT', dividend: 3.0, months: [3, 9] }, // SRA HD
+            '3834': { name: 'IT', dividend: 2.5, months: [3] }, // 朝日ネット
+            '4008': { name: '化学', dividend: 3.2, months: [3, 9] }, // 住友精化
+            '4042': { name: '化学', dividend: 3.5, months: [3, 9] }, // 東ソー
+            '4097': { name: '化学', dividend: 3.0, months: [3] }, // 高圧ガス
+            '4248': { name: '製造', dividend: 2.8, months: [3] }, // 竹本容器
+            '4345': { name: 'IT', dividend: 2.5, months: [3] }, // シーティーエス
+            '4401': { name: '化学', dividend: 3.0, months: [3, 9] }, // ADEKA
+            '4540': { name: '医薬品', dividend: 2.5, months: [3, 9] }, // ツムラ
+            '4661': { name: 'エンタメ', dividend: 1.5, months: [3, 9] }, // オリエンタルランド
+            '4719': { name: 'IT', dividend: 2.8, months: [3] }, // アルファシステムズ
+            '4752': { name: 'IT', dividend: 2.5, months: [3] }, // 昭和システムエンジニア
+            '4832': { name: 'IT', dividend: 2.8, months: [3] }, // JFEシステムズ
+            '4972': { name: '化学', dividend: 3.0, months: [3] }, // 綜研化学
+            '5388': { name: '化学', dividend: 3.2, months: [3] }, // クニミネ工業
+            '6073': { name: 'サービス', dividend: 3.5, months: [3, 9] }, // アサンテ
+            '6345': { name: '機械', dividend: 3.0, months: [3] }, // アイチコーポレーション
+            '6432': { name: '機械', dividend: 2.8, months: [3] }, // 竹内製作所
+            '6458': { name: '機械', dividend: 3.2, months: [3] }, // 新晃工業
+            '6539': { name: 'サービス', dividend: 2.5, months: [3, 9] }, // MS-Japan
+            '6652': { name: '機械', dividend: 3.0, months: [3] }, // IDEC
+            '6785': { name: '機械', dividend: 3.2, months: [3] }, // 鈴木
+            '7723': { name: '機械', dividend: 3.5, months: [3] }, // 愛知時計
+            '7749': { name: '医薬品', dividend: 2.8, months: [3, 9] }, // メディキット
+            '7820': { name: '製造', dividend: 3.0, months: [3] }, // ニホンフラッシュ
+            '7860': { name: 'エンタメ', dividend: 2.0, months: [3, 9] }, // エイベックス
+            '7989': { name: '製造', dividend: 3.2, months: [12] }, // 立川ブラインド
+            '7994': { name: '製造', dividend: 3.0, months: [3] }, // オカムラ
+            '8058': { name: '商社', dividend: 4.5, months: [3, 9] }, // 三菱商事
+            '8130': { name: '小売', dividend: 3.2, months: [3, 9] }, // サンゲツ
+            '8309': { name: '金融', dividend: 4.0, months: [3, 9] }, // 三井住友トラスト
+            '8584': { name: '金融', dividend: 3.8, months: [3, 9] }, // ジャックス
+            '8593': { name: '金融', dividend: 4.2, months: [3, 9] }, // 三菱HCキャピタル
+            '9432': { name: 'IT', dividend: 2.5, months: [3, 9] }, // NTT
+        };
+
+        // 税率定数（配当金の源泉徴収税率: 20.315%）
+        const TAX_RATE = 0.20315;
+
+        let assetTypeChart = null;
+        let industryChart = null;
+        let domesticPerformanceChart = null;
+        let foreignPerformanceChart = null;
+
+        async function fetchFearGreedIndex() {
+            try {
+                // CNN公式データAPIを使用
+                const response = await fetch(
+                    'https://production.dataviz.cnn.io/index/fearandgreed/graphdata',
+                    { headers: { 'User-Agent': 'Mozilla/5.0' } }
+                );
+                const data = await response.json();
+                const fg = data.fear_and_greed;
+                const value = Math.round(fg.score);
+
+                fearGreedIndex = value;
+
+                // 針の角度: -90度(0)〜+90度(100)
+                const angle = (value / 100) * 180 - 90;
+                const needle = document.getElementById('gaugeNeedle');
+                if (needle) needle.setAttribute('transform', `rotate(${angle}, 150, 150)`);
+
+                // ゾーン色・ラベル
+                let color, statusText, activeArc;
+                if (value < 25) {
+                    color = '#e05c5c'; statusText = 'EXTREME FEAR'; activeArc = 'arc0';
+                } else if (value < 45) {
+                    color = '#f0a050'; statusText = 'FEAR'; activeArc = 'arc1';
+                } else if (value < 55) {
+                    color = '#d4c44a'; statusText = 'NEUTRAL'; activeArc = 'arc2';
+                } else if (value < 75) {
+                    color = '#8bc44a'; statusText = 'GREED'; activeArc = 'arc3';
+                } else {
+                    color = '#4aaa6a'; statusText = 'EXTREME GREED'; activeArc = 'arc4';
+                }
+
+                ['arc0','arc1','arc2','arc3','arc4'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.setAttribute('opacity', id === activeArc ? '1' : '0.2');
+                });
+
+                document.getElementById('fearGreedValue').textContent = value;
+                document.getElementById('fearGreedValue').style.color = color;
+                document.getElementById('fearGreedStatus').textContent = statusText;
+                document.getElementById('fearGreedStatus').style.color = color;
+
+                // 7つの指標を表示
+                const indicators = [
+                    { key: 'market_momentum_sp500',   label: '📈 S&P500モメンタム',    desc: 'S&P500の125日移動平均との乖離' },
+                    { key: 'stock_price_strength',    label: '💪 株価強度',            desc: 'NYSE 52週高値/安値の比率' },
+                    { key: 'stock_price_breadth',     label: '📊 株価幅',              desc: '値上がり/値下がり出来高の比率' },
+                    { key: 'put_call_options',        label: '⚖️ プット/コール比率',    desc: '売りオプションと買いオプションの比率' },
+                    { key: 'market_volatility_vix',   label: '🌊 VIX（恐怖指数）',     desc: 'VIXと50日移動平均の乖離' },
+                    { key: 'junk_bond_demand',        label: '🔗 ジャンク債需要',       desc: '高リスク債と投資適格債の利回り差' },
+                    { key: 'safe_haven_demand',       label: '🏦 安全資産需要',         desc: '株式と国債のリターン差' },
+                ];
+
+                const container = document.getElementById('fgiIndicators');
+                if (container) {
+                    container.innerHTML = indicators.map(ind => {
+                        const item = data[ind.key];
+                        if (!item) return '';
+                        const s = Math.round(item.score);
+                        let iColor, iLabel;
+                        if (s < 25)      { iColor = '#e05c5c'; iLabel = '極度の恐怖'; }
+                        else if (s < 45) { iColor = '#f0a050'; iLabel = '恐怖'; }
+                        else if (s < 55) { iColor = '#6b7280'; iLabel = '中立'; }
+                        else if (s < 75) { iColor = '#8bc44a'; iLabel = '強欲'; }
+                        else             { iColor = '#4aaa6a'; iLabel = '極度の強欲'; }
+
+                        const barW = Math.max(2, s);
+                        return `
+                        <div class="fgi-indicator-row">
+                            <div class="fgi-ind-header">
+                                <span class="fgi-ind-label">${ind.label}</span>
+                                <span class="fgi-ind-score" style="color:${iColor}">${s} <small style="font-size:11px">${iLabel}</small></span>
+                            </div>
+                            <div class="fgi-bar-bg">
+                                <div class="fgi-bar-fill" style="width:${barW}%;background:${iColor}"></div>
+                            </div>
+                            <div class="fgi-ind-desc">${ind.desc}</div>
+                        </div>`;
+                    }).join('');
+                }
+
+                // 前回比較
+                const prevEl = document.getElementById('fgiComparison');
+                if (prevEl && fg.previous_close) {
+                    const prev = Math.round(fg.previous_close);
+                    const diff = value - prev;
+                    prevEl.innerHTML = `前日 <strong>${prev}</strong> → 本日 <strong style="color:${color}">${value}</strong>
+                        <span style="color:${diff >= 0 ? '#10b981' : '#ef4444'};font-weight:700">
+                            ${diff >= 0 ? '▲' : '▼'}${Math.abs(diff)}
+                        </span>`;
+                }
+
+            } catch (error) {
+                console.error('CNN Fear & Greed API エラー:', error);
+                // フォールバック: alternative.me API
+                try {
+                    const r2 = await fetch('https://api.alternative.me/fng/?limit=1');
+                    const d2 = await r2.json();
+                    const v2 = parseInt(d2.data[0].value);
+                    fearGreedIndex = v2;
+                    document.getElementById('fearGreedValue').textContent = v2;
+                    document.getElementById('fearGreedStatus').textContent = d2.data[0].value_classification.toUpperCase();
+                    const angle = (v2 / 100) * 180 - 90;
+                    const needle = document.getElementById('gaugeNeedle');
+                    if (needle) needle.setAttribute('transform', `rotate(${angle}, 150, 150)`);
+                } catch(e) {
+                    document.getElementById('fearGreedValue').textContent = '--';
+                    document.getElementById('fearGreedStatus').textContent = '取得失敗';
+                }
+            }
+        }
+
+        function generateActionAdvice(stock) {
+            const priceChange = stock.priceChange;
+            const profitRate = stock.profitRate;
+            const currentPrice = stock.currentPrice;
+            const avgPrice = stock.avgPrice;
+            
+            let action = '';
+            let reason = '';
+            
+            // 強欲市場で大幅下落（絶好の買い場）
+            if (fearGreedIndex && fearGreedIndex > 60 && priceChange <= -15) {
+                const limitPrice = Math.round(currentPrice * 0.98);
+                action = `買い増し 100株`;
+                reason = `市場が<span class="reason-highlight">強欲（${fearGreedIndex}）</span>な中で<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%下落</span>。調整局面で絶好の買い場。指値 <span class="reason-highlight">¥${limitPrice.toLocaleString()}</span> で待機推奨`;
+            }
+            // 恐怖市場で大幅下落（慎重に買い増し）
+            else if (fearGreedIndex && fearGreedIndex < 40 && priceChange <= -15) {
+                const limitPrice = Math.round(currentPrice * 0.95);
+                action = `買い増し 100株`;
+                reason = `市場が<span class="reason-highlight">恐怖（${fearGreedIndex}）</span>で<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%下落</span>。パニック売りの可能性あり。指値 <span class="reason-highlight">¥${limitPrice.toLocaleString()}</span> でさらなる下落に備える`;
+            }
+            // 通常の買い増しタイミング（-10%〜-15%）
+            else if (priceChange <= -10 && priceChange > -15) {
+                const limitPrice = Math.round(currentPrice * 0.97);
+                action = `買い増し 100株`;
+                reason = `<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%調整</span>で押し目形成。指値 <span class="reason-highlight">¥${limitPrice.toLocaleString()}</span> で押し目買いのチャンス`;
+            }
+            // 中程度の下落（様子見だが条件次第で買い）
+            else if (priceChange <= -7 && priceChange > -10) {
+                const limitPrice = Math.round(currentPrice * 0.96);
+                action = `-`;
+                reason = `<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%下落</span>。まだ買い場ではないが、指値 <span class="reason-highlight">¥${limitPrice.toLocaleString()}</span> で下値を拾う準備も検討`;
+            }
+            // 大幅上昇（利益確定推奨）
+            else if (profitRate > 50) {
+                const targetPrice = Math.round(currentPrice * 1.02);
+                action = `売却 100株`;
+                reason = `<span class="reason-highlight">+${profitRate.toFixed(1)}%の大幅利益</span>。部分利確で利益を確定。指値 <span class="reason-highlight">¥${targetPrice.toLocaleString()}</span> で少しでも高値を狙う`;
+            }
+            // 中程度の上昇（30%〜50%）
+            else if (profitRate > 30 && profitRate <= 50) {
+                action = `-`;
+                reason = `<span class="reason-highlight">+${profitRate.toFixed(1)}%</span>と好調を維持。まだ上昇余地あり。現在価格 <span class="reason-highlight">¥${currentPrice.toLocaleString()}</span> から-10%で買い増し検討`;
+            }
+            // 軽微〜中程度の上昇（10%〜30%）
+            else if (profitRate > 10 && profitRate <= 30) {
+                action = `-`;
+                reason = `<span class="reason-highlight">+${profitRate.toFixed(1)}%</span>。順調に推移中。取得単価 <span class="reason-highlight">¥${avgPrice.toLocaleString()}</span> から<span class="reason-highlight">さらに+20%</span>まで保持継続`;
+            }
+            // 小幅な利益（0%〜10%）
+            else if (profitRate > 0 && profitRate <= 10) {
+                action = `-`;
+                reason = `<span class="reason-highlight">+${profitRate.toFixed(1)}%</span>の含み益。まだ利確には早い。市場全体の動向を見ながら長期保有継続`;
+            }
+            // 軽微な損失（0%〜-7%）
+            else if (profitRate < 0 && profitRate > -7) {
+                action = `-`;
+                reason = `<span class="reason-highlight">${profitRate.toFixed(1)}%の含み損</span>。誤差の範囲内。長期投資の観点から保有継続。<span class="reason-highlight">-10%</span>で買い増し検討`;
+            }
+            // 中程度の損失（-7%〜-15%）
+            else if (profitRate <= -7 && profitRate > -15) {
+                action = `-`;
+                reason = `<span class="reason-highlight">${profitRate.toFixed(1)}%の含み損</span>。ナンピン候補だが、まだ待ち。取得単価を下げるなら<span class="reason-highlight">-15%以降</span>が目安`;
+            }
+            // 大幅な損失（-15%以上）
+            else if (profitRate <= -15) {
+                const limitPrice = Math.round(currentPrice * 0.97);
+                action = `-`;
+                reason = `<span class="reason-highlight">${profitRate.toFixed(1)}%の大幅含み損</span>。ナンピンで平均取得単価を下げるチャンス。指値 <span class="reason-highlight">¥${limitPrice.toLocaleString()}</span> で100株の買い増しを検討`;
+            }
+            // その他（通常時）
+            else {
+                action = `-`;
+                reason = `現在価格 <span class="reason-highlight">¥${currentPrice.toLocaleString()}</span>。大きな変動なし。<span class="reason-highlight">±10%</span>の変動で売買検討`;
+            }
+            
+            return { action, reason };
+        }
+
+        function calculatePortfolioScore(domesticStocks, foreignStocks, funds, profitRate) {
+            let score = 50; // 基準点
+            let comments = [];
+            
+            // 1. リターン率による評価（最大30点）
+            if (profitRate > 30) {
+                score += 30;
+                comments.push('優秀なリターン');
+            } else if (profitRate > 20) {
+                score += 25;
+                comments.push('良好なリターン');
+            } else if (profitRate > 10) {
+                score += 20;
+                comments.push('堅実なリターン');
+            } else if (profitRate > 5) {
+                score += 15;
+                comments.push('安定運用');
+            } else if (profitRate > 0) {
+                score += 10;
+                comments.push('プラス維持');
+            } else if (profitRate > -5) {
+                score += 5;
+                comments.push('軽微な損失');
+            } else {
+                score += 0;
+                comments.push('改善の余地あり');
+            }
+            
+            // 2. 分散投資による評価（最大20点）
+            const totalStocks = domesticStocks.length + foreignStocks.length;
+            if (totalStocks >= 30) {
+                score += 20;
+                comments.push('十分に分散');
+            } else if (totalStocks >= 20) {
+                score += 15;
+                comments.push('適度に分散');
+            } else if (totalStocks >= 10) {
+                score += 10;
+                comments.push('やや集中');
+            } else {
+                score += 5;
+                comments.push('分散不足');
+            }
+            
+            // 3. 業界分散（最大15点）
+            const industries = {};
+            domesticStocks.forEach(s => {
+                industries[s.industry] = (industries[s.industry] || 0) + 1;
+            });
+            const industryCount = Object.keys(industries).length;
+            if (industryCount >= 8) {
+                score += 15;
+            } else if (industryCount >= 5) {
+                score += 10;
+            } else {
+                score += 5;
+            }
+            
+            // 4. 国際分散（最大10点）
+            if (foreignStocks.length > 0 && funds.length > 0) {
+                score += 10;
+                comments.push('国際分散OK');
+            } else if (foreignStocks.length > 0 || funds.length > 0) {
+                score += 5;
+            }
+            
+            // 5. ボーナス点：配当株保有
+            const hasHighDividend = domesticStocks.some(s => {
+                const info = industryDatabase[s.code];
+                return info && info.dividend >= 3.5;
+            });
+            if (hasHighDividend) {
+                score += 5;
+                comments.push('高配当株保有');
+            }
+            
+            // スコアを100点満点に調整
+            score = Math.min(100, Math.max(0, score));
+            
+            // グレード判定
+            let grade = '';
+            if (score >= 90) grade = 'S';
+            else if (score >= 80) grade = 'A';
+            else if (score >= 70) grade = 'B';
+            else if (score >= 60) grade = 'C';
+            else grade = 'D';
+            
+            return { score, grade, comments };
+        }
+
+        function generateMarketAnalysis(profitRate, fearGreed, domesticStocks) {
+            const today = new Date();
+            const month = today.getMonth() + 1;
+            const year = today.getFullYear();
+            
+            let marketSentiment = '';
+            let strategy = [];
+            
+            // 市場心理の分析
+            if (fearGreed >= 75) {
+                marketSentiment = `市場は<span class="analysis-highlight">極度の強欲（${fearGreed}）</span>状態。投資家が楽観的すぎる可能性があり、調整局面に入るリスクが高まっています。`;
+                strategy.push('利益確定を検討：+50%以上の銘柄は部分売却も視野に');
+                strategy.push('新規購入は慎重に：高値掴みのリスクあり');
+                strategy.push('現金比率を上げる：次の調整局面に備える');
+            } else if (fearGreed >= 55) {
+                marketSentiment = `市場は<span class="analysis-highlight">強欲（${fearGreed}）</span>傾向。上昇トレンド継続中ですが、過熱感には注意が必要です。`;
+                strategy.push('保有継続が基本：トレンドに乗る');
+                strategy.push('押し目待ち：-10%の調整で買い増し');
+                strategy.push('一部利確：+40%超えは検討余地あり');
+            } else if (fearGreed >= 45) {
+                marketSentiment = `市場は<span class="analysis-highlight">中立（${fearGreed}）</span>。方向感が定まっていない状態です。`;
+                strategy.push('様子見が賢明：大きな動きを待つ');
+                strategy.push('分散投資を継続：リスク管理を徹底');
+                strategy.push('ウォッチリスト作成：買い場を探す');
+            } else if (fearGreed >= 25) {
+                marketSentiment = `市場は<span class="analysis-highlight">恐怖（${fearGreed}）</span>状態。売りが売りを呼ぶ展開ですが、優良株の買い場となる可能性も。`;
+                strategy.push('優良株の押し目買い：-15%以上の調整は好機');
+                strategy.push('ナンピン検討：保有株の平均取得単価を下げる');
+                strategy.push('現金温存：さらなる下落に備える余力も残す');
+            } else {
+                marketSentiment = `市場は<span class="analysis-highlight">極度の恐怖（${fearGreed}）</span>。パニック売りの様相ですが、長期投資家には絶好の買い場となる可能性があります。`;
+                strategy.push('積極的な買い増し：優良株を拾う絶好機');
+                strategy.push('分割購入を推奨：一度に全額投入せず、3-4回に分けて');
+                strategy.push('長期目線で保持：短期の値動きに惑わされない');
+            }
+            
+            // ポートフォリオのパフォーマンスに基づくアドバイス
+            let portfolioAdvice = '';
+            if (profitRate > 20) {
+                portfolioAdvice = `あなたのポートフォリオは<span class="analysis-highlight">+${profitRate.toFixed(1)}%</span>と市場平均を上回る好成績。この調子を維持しつつ、過度なリスクは避けましょう。`;
+            } else if (profitRate > 0) {
+                portfolioAdvice = `ポートフォリオは<span class="analysis-highlight">+${profitRate.toFixed(1)}%</span>のプラス。着実な成長路線です。`;
+            } else {
+                portfolioAdvice = `現在<span class="analysis-highlight">${profitRate.toFixed(1)}%</span>の含み損ですが、長期投資なら一時的な調整。焦らず保有継続を。`;
+            }
+            
+            return `
+                <div class="analysis-section">
+                    <h3>📊 ${year}年${month}月の市場状況</h3>
+                    <p class="analysis-text">${marketSentiment}</p>
+                </div>
+                <div class="analysis-section">
+                    <h3>💼 あなたのポートフォリオ</h3>
+                    <p class="analysis-text">${portfolioAdvice}</p>
+                </div>
+                <div class="analysis-section">
+                    <h3>🎯 今月の推奨戦略</h3>
+                    <ul class="strategy-list">
+                        ${strategy.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function getJapaneseClassification(classification) {
+            const map = {
+                'Extreme Fear': '🥶 極度の恐怖',
+                'Fear': '😰 恐怖',
+                'Neutral': '😐 中立',
+                'Greed': '😊 強欲',
+                'Extreme Greed': '🤑 極度の強欲'
+            };
+            return map[classification] || classification;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        document.getElementById('csvFileInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                Array.from(files).forEach(file => {
+                    parseCSV(file);
+                });
+            }
+        });
+
+        function parseCSV(file) {
+            Papa.parse(file, {
+                encoding: 'Shift_JIS',
+                complete: function(results) {
+                    const data = results.data;
+                    if (data.length === 0) return;
+
+                    // 1行目のヘッダーで種別を判定
+                    const firstCell = (data[0][0] || '').trim();
+                    
+                    if (firstCell === '投資信託種別') {
+                        console.log('✅ 投資信託CSVと判定');
+                        processFundData(data);
+                    } else {
+                        console.log('✅ 株式CSVと判定');
+                        processData(data);
+                    }
+                }
+            });
+        }
+
+        function processFundData(data) {
+            if (data.length < 2) {
+                console.log('投資信託データが空です');
+                return;
+            }
+
+            // 列インデックス（ヘッダー行から確認済み）
+            // [0]=投資信託種別, [1]=口座区分, [2]=ファンド名, [3]=分配金コース
+            // [4]=保有数量, [7]=平均取得価額, [8]=取得総額, [9]=基準価額
+            // [12]=時価評価額, [13]=評価損益, [14]=評価損益%
+
+            for (let i = 1; i < data.length; i++) {
+                const row = data[i];
+                if (!row || row.length < 15) continue;
+                if (row[0] !== '投資信託') continue;
+                if (!row[2] || row[2] === '') continue;
+
+                const accountType = (row[1] || '').trim();
+                const fundName = (row[2] || '').trim();
+                const quantity = parseFloat((row[4] || '0').replace(/,/g, ''));
+                const avgPrice = parseFloat((row[7] || '0').replace(/,/g, ''));
+                const acquiredTotal = parseFloat((row[8] || '0').replace(/,/g, ''));
+                const basePrice = parseFloat((row[9] || '0').replace(/,/g, ''));
+                const marketValue = parseFloat((row[12] || '0').replace(/,/g, ''));
+                const profitLoss = parseFloat((row[13] || '0').replace(/,/g, ''));
+                const profitRate = parseFloat((row[14] || '0').replace(/,/g, ''));
+
+                if (isNaN(marketValue) || marketValue === 0) continue;
+
+                let accountClass = 'account-tokutei';
+                let accountLabel = '特定';
+
+                if (accountType.includes('NISAつみたて') || accountType.includes('つみたて投資枠')) {
+                    accountClass = 'account-nisa-tsumitate';
+                    accountLabel = 'つみたてNISA';
+                } else if (accountType.includes('NISA成長') || accountType.includes('成長投資枠')) {
+                    accountClass = 'account-nisa-growth';
+                    accountLabel = '成長投資枠';
+                } else if (accountType.includes('iDeCo') || accountType.includes('イデコ') || accountType.includes('確定拠出')) {
+                    accountClass = 'account-ideco';
+                    accountLabel = 'iDeCo';
+                }
+
+                const exists = fundsData.some(f => f.fundName === fundName && f.accountType === accountType);
+                if (!exists) {
+                    fundsData.push({
+                        fundName, accountType, accountClass, accountLabel,
+                        quantity, avgPrice, acquiredTotal, basePrice,
+                        marketValue, profitLoss, profitRate
+                    });
+                }
+            }
+
+            console.log('✅ 投資信託データ読み込み完了:', fundsData.length, '本');
+            updateDashboard();
+        }
+
+        function processData(data) {
+            let startIndex = -1;
+            
+            // 保有商品詳細セクションを探す
+            for (let i = 0; i < data.length; i++) {
+                if (data[i][0] === '種別' && data[i][1] === '銘柄コード・ティッカー') {
+                    startIndex = i + 1;
+                    break;
+                }
+            }
+
+            if (startIndex === -1) {
+                console.log('株式データが見つかりませんでした');
+                return;
+            }
+
+            // 株式・投資信託データを処理
+            // 列構造（楽天証券 assetbalance_all CSV）:
+            // [0]=種別, [1]=銘柄コード(株式)/空(投資信託), [2]=銘柄名/ファンド名
+            // [3]=口座, [4]=保有数量, [5]=単位
+            // [6]=平均取得価額, [7]=通貨, [8]=現在価格/基準価額, [9]=通貨
+            // [10],[11]=空, [12]=前日比, [13]=通貨
+            // [14]=時価評価額[円], [15]=外貨建て評価額
+            // [16]=評価損益[円], [17]=評価損益[%]
+
+            for (let i = startIndex; i < data.length; i++) {
+                const row = data[i];
+                if (!row || row.length < 15) continue;
+                const type = (row[0] || '').trim();
+
+                // ---- 国内株式・米国株式 ----
+                if ((type === '国内株式' || type === '米国株式') && row[1] && row[4]) {
+                    const code = row[1].trim();
+                    const name = row[2].trim();
+                    const quantity  = parseFloat((row[4] || '').replace(/,/g, ''));
+                    const avgPrice  = parseFloat((row[6] || '').replace(/,/g, ''));
+                    const currentPrice = parseFloat((row[8] || '').replace(/,/g, ''));
+                    const marketValue  = parseFloat((row[14] || '').replace(/,/g, ''));
+                    const profitLoss   = parseFloat((row[16] || '').replace(/[+,]/g, ''));
+                    const profitRate   = parseFloat((row[17] || '').replace(/[+,]/g, ''));
+
+                    if (!isNaN(quantity) && !isNaN(currentPrice) && !isNaN(marketValue)) {
+                        const industryInfo = industryDatabase[code] || { name: 'その他', dividend: 3.0, months: [3, 9] };
+                        const estimatedDividend = marketValue * (industryInfo.dividend / 100);
+                        const priceChange = avgPrice > 0 ? ((currentPrice - avgPrice) / avgPrice) * 100 : 0;
+
+                        let recommendation = 'HOLD';
+                        if (priceChange <= -15) recommendation = 'STRONG_BUY';
+                        else if (priceChange <= -10) recommendation = 'BUY';
+
+                        const stockData = {
+                            code, name, quantity, avgPrice, currentPrice,
+                            marketValue, profitLoss, profitRate,
+                            estimatedDividend, recommendation,
+                            priceChange, industry: industryInfo.name, type
+                        };
+
+                        if (type === '国内株式') {
+                            if (!domesticStocksData.some(s => s.code === code && s.name === name)) {
+                                domesticStocksData.push(stockData);
+                            }
+                        } else {
+                            if (!foreignStocksData.some(s => s.code === code && s.name === name)) {
+                                foreignStocksData.push(stockData);
+                            }
+                        }
+                    }
+                }
+
+                // ---- 投資信託（同一CSV内に混在）----
+                // サマリー行は row[1] に数値が入る → row[1]==='' の行が詳細行
+                else if (type === '投資信託' && row[1] === '' && row[2] && row[2].trim() !== '') {
+                    const fundName     = row[2].trim();
+                    const accountType  = (row[3] || '').trim();
+                    const quantity     = parseFloat((row[4]  || '').replace(/,/g, ''));
+                    const avgPrice     = parseFloat((row[6]  || '').replace(/,/g, ''));
+                    const basePrice    = parseFloat((row[8]  || '').replace(/,/g, ''));
+                    const marketValue  = parseFloat((row[14] || '').replace(/,/g, ''));
+                    const profitLoss   = parseFloat((row[16] || '').replace(/[+,]/g, ''));
+                    const profitRate   = parseFloat((row[17] || '').replace(/[+,]/g, ''));
+
+                    // 取得総額 = 平均取得価額 × 口数 / 10000（投資信託は1万口単位）
+                    const acquiredTotal = (!isNaN(avgPrice) && !isNaN(quantity)) ? Math.round(avgPrice * quantity / 10000) : 0;
+
+                    if (!isNaN(marketValue) && marketValue > 0) {
+                        let accountClass = 'account-tokutei';
+                        let accountLabel = '特定';
+                        if (accountType.includes('つみたて投資枠') || accountType.includes('NISAつみたて')) {
+                            accountClass = 'account-nisa-tsumitate';
+                            accountLabel = 'つみたてNISA';
+                        } else if (accountType.includes('成長投資枠') || accountType.includes('NISA成長')) {
+                            accountClass = 'account-nisa-growth';
+                            accountLabel = '成長投資枠';
+                        } else if (accountType.includes('iDeCo') || accountType.includes('イデコ') || accountType.includes('確定拠出')) {
+                            accountClass = 'account-ideco';
+                            accountLabel = 'iDeCo';
+                        }
+
+                        if (!fundsData.some(f => f.fundName === fundName && f.accountType === accountType)) {
+                            fundsData.push({
+                                fundName, accountType, accountClass, accountLabel,
+                                quantity, avgPrice, acquiredTotal, basePrice,
+                                marketValue, profitLoss, profitRate
+                            });
+                            console.log(`  投資信託追加: ${fundName} (${accountLabel}) ¥${marketValue.toLocaleString()}`);
+                        }
+                    }
+                }
+            }
+
+            console.log('✅ 国内株式:', domesticStocksData.length, '銘柄');
+            console.log('✅ 外国株式:', foreignStocksData.length, '銘柄');
+            console.log('✅ 投資信託:', fundsData.length, '本');
+
+            allStocksData = [...domesticStocksData, ...foreignStocksData];
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            const totalStocks = domesticStocksData.length + foreignStocksData.length + fundsData.length;
+            if (totalStocks === 0) {
+                return;
+            }
+
+            document.getElementById('noData').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+
+            // 国内株式の合計
+            const domesticTotalValue = domesticStocksData.reduce((sum, s) => sum + s.marketValue, 0);
+            const domesticTotalCost = domesticStocksData.reduce((sum, s) => sum + (s.avgPrice * s.quantity), 0);
+            const domesticTotalDividend = domesticStocksData.reduce((sum, s) => sum + s.estimatedDividend, 0);
+
+            // 外国株式の合計
+            const foreignTotalValue = foreignStocksData.reduce((sum, s) => sum + s.marketValue, 0);
+            const foreignTotalCost = foreignStocksData.reduce((sum, s) => sum + (s.avgPrice * s.quantity), 0);
+
+            // 投資信託の合計
+            const fundsTotalValue = fundsData.reduce((sum, f) => sum + f.marketValue, 0);
+            const fundsTotalCost = fundsData.reduce((sum, f) => sum + f.acquiredTotal, 0);
+
+            // 総合計
+            const totalValue = domesticTotalValue + foreignTotalValue + fundsTotalValue;
+            const totalCost = domesticTotalCost + foreignTotalCost + fundsTotalCost;
+            const totalProfit = totalValue - totalCost;
+            const profitRate = totalCost > 0 ? (totalProfit / totalCost) * 100 : 0;
+            const totalDividendBefore = domesticTotalDividend; // 国内株のみ
+            const totalDividendAfter = totalDividendBefore * (1 - TAX_RATE);
+
+            document.getElementById('totalValue').textContent = formatCurrency(totalValue);
+            document.getElementById('totalProfit').textContent = formatCurrency(totalProfit);
+            document.getElementById('totalProfit').className = 'card-value ' + (totalProfit >= 0 ? 'positive' : 'negative');
+            document.getElementById('profitRate').textContent = (profitRate >= 0 ? '+' : '') + profitRate.toFixed(2) + '%';
+            document.getElementById('profitRate').className = 'card-value ' + (profitRate >= 0 ? 'positive' : 'negative');
+            document.getElementById('annualDividendBefore').textContent = formatCurrency(totalDividendBefore);
+            document.getElementById('annualDividendAfter').textContent = formatCurrency(totalDividendAfter);
+
+            if (totalProfit < 0) {
+                document.getElementById('profitSubtitle').textContent = '買った時より減った金額';
+            }
+
+            // ポートフォリオ採点
+            const scoreResult = calculatePortfolioScore(domesticStocksData, foreignStocksData, fundsData, profitRate);
+            document.getElementById('portfolioScore').innerHTML = `${scoreResult.score}<span class="score-grade">/${scoreResult.grade}</span>`;
+            const scoreElement = document.getElementById('portfolioScore');
+            if (scoreResult.score >= 80) {
+                scoreElement.className = 'card-value score positive';
+            } else if (scoreResult.score >= 60) {
+                scoreElement.className = 'card-value score';
+            } else {
+                scoreElement.className = 'card-value score negative';
+            }
+            document.getElementById('scoreComment').textContent = scoreResult.comments.join(' / ');
+
+            // 市場分析を生成
+            const analysisHTML = generateMarketAnalysis(profitRate, fearGreedIndex, domesticStocksData);
+            document.getElementById('marketAnalysisContent').innerHTML = analysisHTML;
+
+            const status = document.getElementById('uploadStatus');
+            const parts = [];
+            if (domesticStocksData.length > 0) parts.push(`国内株${domesticStocksData.length}銘柄`);
+            if (foreignStocksData.length > 0) parts.push(`外国株${foreignStocksData.length}銘柄`);
+            if (fundsData.length > 0) parts.push(`投資信託${fundsData.length}本`);
+            status.innerHTML = `<div class="file-status">✓ ${parts.join(' / ')}</div>`;
+
+            // テーブル表示
+            if (domesticStocksData.length > 0) {
+                displayStockTable(domesticStocksData, 'domesticTableBody');
+                createIndustrySummary(domesticStocksData);
+                createIndustryChart(domesticStocksData);
+                createDomesticPerformanceChart(domesticStocksData);
+                createMonthlyDividend(domesticStocksData);
+            }
+            if (foreignStocksData.length > 0) {
+                displayStockTable(foreignStocksData, 'foreignTableBody');
+                createForeignPerformanceChart(foreignStocksData);
+            }
+            if (fundsData.length > 0) {
+                displayFundTable(fundsData);
+            }
+
+            // 資産分類チャート
+            createAssetTypeChart(domesticTotalValue, foreignTotalValue, fundsTotalValue);
+        }
+
+        function createIndustrySummary(stocks) {
+            const industryCounts = {};
+            stocks.forEach(stock => {
+                industryCounts[stock.industry] = (industryCounts[stock.industry] || 0) + 1;
+            });
+
+            const grid = document.getElementById('industryGrid');
+            grid.innerHTML = '';
+
+            Object.entries(industryCounts)
+                .sort((a, b) => b[1] - a[1])
+                .forEach(([industry, count]) => {
+                    const item = document.createElement('div');
+                    item.className = 'industry-item';
+                    item.onclick = () => showIndustryStocks(industry, stocks);
+                    item.innerHTML = `
+                        <div class="industry-item-name">${industry}</div>
+                        <div class="industry-item-count">${count}</div>
+                        <div class="industry-item-label">銘柄</div>
+                    `;
+                    grid.appendChild(item);
+                });
+        }
+
+        function showIndustryStocks(industry, allStocks) {
+            const stocks = allStocks.filter(s => s.industry === industry);
+            document.getElementById('modalIndustryName').textContent = `${industry}業界の銘柄`;
+            
+            const listContainer = document.getElementById('modalStockList');
+            listContainer.innerHTML = '';
+
+            stocks.sort((a, b) => b.marketValue - a.marketValue).forEach(stock => {
+                const item = document.createElement('div');
+                item.className = 'stock-list-item';
+                item.innerHTML = `
+                    <div class="stock-list-code">${stock.code}</div>
+                    <div class="stock-list-name">${stock.name}</div>
+                    <div class="stock-list-details">
+                        <div class="stock-list-detail">
+                            <div class="stock-list-label">保有数</div>
+                            <div class="stock-list-value">${stock.quantity.toLocaleString()}株</div>
+                        </div>
+                        <div class="stock-list-detail">
+                            <div class="stock-list-label">現在価格</div>
+                            <div class="stock-list-value">¥${stock.currentPrice.toLocaleString()}</div>
+                        </div>
+                        <div class="stock-list-detail">
+                            <div class="stock-list-label">評価額</div>
+                            <div class="stock-list-value">¥${stock.marketValue.toLocaleString()}</div>
+                        </div>
+                        <div class="stock-list-detail">
+                            <div class="stock-list-label">損益率</div>
+                            <div class="stock-list-value ${stock.profitRate >= 0 ? 'positive-value' : 'negative-value'}">
+                                ${stock.profitRate >= 0 ? '+' : ''}${stock.profitRate.toFixed(2)}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+
+            document.getElementById('industryModal').classList.add('active');
+        }
+
+        function closeIndustryModal() {
+            document.getElementById('industryModal').classList.remove('active');
+        }
+
+        // モーダル外クリックで閉じる
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('industryModal');
+            if (event.target === modal) {
+                closeIndustryModal();
+            }
+        });
+
+        function displayStockTable(stocks, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = '';
+            
+            const sorted = [...stocks].sort((a, b) => b.marketValue - a.marketValue);
+
+            sorted.forEach(stock => {
+                const tr = document.createElement('tr');
+                
+                let recommendationBadge = '';
+                if (stock.recommendation === 'STRONG_BUY') {
+                    recommendationBadge = '<span class="badge strong-buy">🔥 今が買い時！</span>';
+                } else if (stock.recommendation === 'BUY') {
+                    recommendationBadge = '<span class="badge buy">💡 買い増し検討</span>';
+                } else {
+                    recommendationBadge = '<span class="badge hold">✓ 保持</span>';
+                }
+
+                const industryBadge = stock.industry ? `<span class="industry-badge industry-${stock.industry}">${stock.industry}</span>` : '';
+                
+                // AI分析による推奨アクションと理由を生成
+                const advice = generateActionAdvice(stock);
+                const actionClass = advice.action === '-' ? 'action-cell empty' : 'action-cell';
+
+                tr.innerHTML = `
+                    <td>
+                        <div class="stock-code">${stock.code}</div>
+                        <div class="stock-name">${stock.name}</div>
+                    </td>
+                    <td>${industryBadge}</td>
+                    <td><strong>${stock.quantity.toLocaleString()}</strong>株</td>
+                    <td>¥${stock.avgPrice.toLocaleString()}</td>
+                    <td><strong>¥${stock.currentPrice.toLocaleString()}</strong></td>
+                    <td class="${stock.profitLoss >= 0 ? 'positive-value' : 'negative-value'}">
+                        ${stock.profitLoss >= 0 ? '+' : ''}¥${stock.profitLoss.toLocaleString()}
+                    </td>
+                    <td class="${stock.profitRate >= 0 ? 'positive-value' : 'negative-value'}">
+                        ${stock.profitRate >= 0 ? '+' : ''}${stock.profitRate.toFixed(2)}%
+                    </td>
+                    <td><strong>¥${stock.marketValue.toLocaleString()}</strong></td>
+                    <td>${recommendationBadge}</td>
+                    <td class="${actionClass}">${advice.action}</td>
+                    <td class="reason-cell">${advice.reason}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function displayFundTable(funds) {
+            const tbody = document.getElementById('fundsTableBody');
+            tbody.innerHTML = '';
+            
+            const sorted = [...funds].sort((a, b) => b.marketValue - a.marketValue);
+
+            sorted.forEach(fund => {
+                const tr = document.createElement('tr');
+                
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-weight: 600; color: var(--text-primary); max-width: 400px;">${fund.fundName}</div>
+                    </td>
+                    <td>
+                        <span class="account-badge ${fund.accountClass}">${fund.accountLabel}</span>
+                    </td>
+                    <td><strong>${fund.quantity.toLocaleString()}</strong>口</td>
+                    <td>¥${fund.avgPrice.toLocaleString()}</td>
+                    <td><strong>¥${fund.basePrice.toLocaleString()}</strong></td>
+                    <td class="${fund.profitLoss >= 0 ? 'positive-value' : 'negative-value'}">
+                        ${fund.profitLoss >= 0 ? '+' : ''}¥${fund.profitLoss.toLocaleString()}
+                    </td>
+                    <td class="${fund.profitRate >= 0 ? 'positive-value' : 'negative-value'}">
+                        ${fund.profitRate >= 0 ? '+' : ''}${fund.profitRate.toFixed(2)}%
+                    </td>
+                    <td><strong>¥${fund.marketValue.toLocaleString()}</strong></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function createIndustryChart(stocks) {
+            const ctx = document.getElementById('industryChart').getContext('2d');
+            if (industryChart) industryChart.destroy();
+
+            const industryTotals = {};
+            stocks.forEach(stock => {
+                industryTotals[stock.industry] = (industryTotals[stock.industry] || 0) + stock.marketValue;
+            });
+
+            const sortedEntries = Object.entries(industryTotals).sort((a, b) => b[1] - a[1]);
+            const labels = sortedEntries.map(e => e[0]);
+            const values = sortedEntries.map(e => e[1]);
+
+            industryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: [
+                            '#10b981', '#34d399', '#6ee7b7', '#a7f3d0', 
+                            '#d1fae5', '#6366f1', '#8b5cf6', '#ec4899',
+                            '#f59e0b', '#ef4444'
+                        ],
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${context.label}: ¥${value.toLocaleString()} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createAssetTypeChart(domesticValue, foreignValue, fundsValue) {
+            const ctx = document.getElementById('assetTypeChart').getContext('2d');
+            if (assetTypeChart) assetTypeChart.destroy();
+
+            const labels = [];
+            const values = [];
+            const colors = [];
+
+            if (domesticValue > 0) {
+                labels.push('国内株式');
+                values.push(domesticValue);
+                colors.push('#10b981');
+            }
+            if (foreignValue > 0) {
+                labels.push('外国株式');
+                values.push(foreignValue);
+                colors.push('#6366f1');
+            }
+            if (fundsValue > 0) {
+                labels.push('投資信託');
+                values.push(fundsValue);
+                colors.push('#ec4899');
+            }
+
+            assetTypeChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${context.label}: ¥${value.toLocaleString()} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createDomesticPerformanceChart(stocks) {
+            const ctx = document.getElementById('domesticPerformanceChart').getContext('2d');
+            if (domesticPerformanceChart) domesticPerformanceChart.destroy();
+
+            if (stocks.length === 0) {
+                ctx.font = '16px Outfit';
+                ctx.fillStyle = '#9ca3af';
+                ctx.textAlign = 'center';
+                ctx.fillText('データなし', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+
+            const sorted = [...stocks].sort((a, b) => b.profitRate - a.profitRate);
+            const labels = sorted.map(s => s.name.length > 15 ? s.name.substring(0, 15) + '...' : s.name);
+            const values = sorted.map(s => s.profitRate);
+            const colors = values.map(v => v >= 0 ? '#10b981' : '#ef4444');
+
+            domesticPerformanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '損益率 (%)',
+                        data: values,
+                        backgroundColor: colors,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `損益率: ${context.parsed.x >= 0 ? '+' : ''}${context.parsed.x.toFixed(2)}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createForeignPerformanceChart(stocks) {
+            const ctx = document.getElementById('foreignPerformanceChart').getContext('2d');
+            if (foreignPerformanceChart) foreignPerformanceChart.destroy();
+
+            if (stocks.length === 0) {
+                ctx.font = '16px Outfit';
+                ctx.fillStyle = '#9ca3af';
+                ctx.textAlign = 'center';
+                ctx.fillText('データなし', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+
+            const sorted = [...stocks].sort((a, b) => b.profitRate - a.profitRate);
+            const labels = sorted.map(s => s.name.length > 15 ? s.name.substring(0, 15) + '...' : s.name);
+            const values = sorted.map(s => s.profitRate);
+            const colors = values.map(v => v >= 0 ? '#6366f1' : '#ef4444');
+
+            foreignPerformanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '損益率 (%)',
+                        data: values,
+                        backgroundColor: colors,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `損益率: ${context.parsed.x >= 0 ? '+' : ''}${context.parsed.x.toFixed(2)}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createMonthlyDividend(stocks) {
+            const MONTH_NAMES = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+            const MONTH_EN    = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+            const currentMonth = new Date().getMonth(); // 0-indexed
+
+            // --- 月別集計（銘柄リスト付き）---
+            const monthlyDividends = new Array(12).fill(0);
+            const monthlyStocks    = Array.from({length:12}, ()=>[]);
+
+            stocks.forEach(stock => {
+                const info = industryDatabase[stock.code];
+                if (info && info.months && info.months.length > 0) {
+                    const perTime = stock.estimatedDividend / info.months.length;
+                    info.months.forEach(m => {
+                        monthlyDividends[m-1] += perTime;
+                        monthlyStocks[m-1].push({
+                            name: stock.name,
+                            amount: Math.round(perTime)
+                        });
+                    });
+                } else {
+                    // 未登録銘柄：3月・9月の年2回と仮定
+                    const perTime = stock.estimatedDividend / 2;
+                    [2, 8].forEach(idx => {
+                        monthlyDividends[idx] += perTime;
+                        monthlyStocks[idx].push({ name: stock.name, amount: Math.round(perTime) });
+                    });
+                }
+            });
+
+            const totalBefore = monthlyDividends.reduce((s,v)=>s+v, 0);
+            const totalAfter  = totalBefore * (1 - TAX_RATE);
+
+            // --- バナー更新 ---
+            const bannerBefore = document.getElementById('divTotalBefore');
+            const bannerAfter  = document.getElementById('divTotalAfter');
+            if (bannerBefore) bannerBefore.textContent = '¥' + Math.round(totalBefore).toLocaleString();
+            if (bannerAfter)  bannerAfter.textContent  = '¥' + Math.round(totalAfter).toLocaleString();
+
+            // --- 月グリッド生成 ---
+            const container = document.getElementById('monthlyDividend');
+            container.innerHTML = '';
+
+            MONTH_NAMES.forEach((mName, idx) => {
+                const before  = monthlyDividends[idx];
+                const after   = before * (1 - TAX_RATE);
+                const hasDiv  = before > 0;
+                const isCurrent = idx === currentMonth;
+
+                const card = document.createElement('div');
+                card.className = 'month-card ' + (hasDiv ? 'has-dividend' : 'no-dividend') + (isCurrent ? ' current-month' : '');
+
+                if (hasDiv) {
+                    // ツールチップ用銘柄リスト
+                    const topStocks = monthlyStocks[idx]
+                        .sort((a,b) => b.amount - a.amount)
+                        .slice(0, 5)
+                        .map(s => `${s.name.substring(0,10)} ¥${s.amount.toLocaleString()}`)
+                        .join('\n');
+
+                    card.innerHTML = `
+                        <div class="mc-month">${MONTH_EN[idx]} / ${mName}</div>
+                        <div class="mc-main-amount">¥${Math.round(before).toLocaleString()}</div>
+                        <div class="mc-main-label">税引前（推定）</div>
+                        <hr class="mc-divider">
+                        <div class="mc-after-amount">¥${Math.round(after).toLocaleString()}</div>
+                        <div class="mc-after-label">👛 実際に受け取る額</div>
+                        <div class="mc-stocks-tooltip" style="white-space:pre">${topStocks}</div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="mc-month">${MONTH_EN[idx]} / ${mName}</div>
+                        <div class="mc-no-div-text">配当なし</div>
+                    `;
+                }
+
+                container.appendChild(card);
+            });
+        }
+
+        function formatCurrency(value) {
+            return '¥' + Math.round(value).toLocaleString();
+        }
+
+        fetchFearGreedIndex();
+    </script>
+</body>
+</html>
