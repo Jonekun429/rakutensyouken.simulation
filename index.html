@@ -6,6 +6,8 @@
     <title>ポートフォリオ総合分析ダッシュボード</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -400,7 +402,107 @@
             margin-top: 8px;
         }
 
-        /* 市場分析セクション */
+        /* PDF エクスポートバー */
+        .pdf-export-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #1e3a5f, #2563eb);
+            border-radius: 14px;
+            padding: 14px 22px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .pdf-export-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .pdf-export-btn {
+            background: white;
+            color: #1e40af;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 22px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            font-family: 'Outfit', sans-serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .pdf-export-btn:hover {
+            background: #eff6ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+        .pdf-export-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* PDF生成中オーバーレイ */
+        .pdf-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            gap: 20px;
+        }
+
+        .pdf-overlay-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 50px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .pdf-spinner {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #e5e7eb;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .pdf-overlay-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 6px;
+        }
+
+        .pdf-overlay-sub {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* PDF専用印刷スタイル */
+        @media print {
+            .pdf-export-bar, .upload-section, .info-card,
+            .analysis-tabs, .tab-button, header { display: none !important; }
+        }
         .market-analysis {
             background: white;
             padding: 32px;
@@ -1305,6 +1407,18 @@
         </div>
 
         <div id="dashboard" style="display: none;">
+
+            <!-- PDFエクスポートバー -->
+            <div class="pdf-export-bar animate-in">
+                <div class="pdf-export-info">
+                    <span>📋</span>
+                    <span>ポートフォリオレポートをPDFで出力できます</span>
+                </div>
+                <button class="pdf-export-btn" id="pdfExportBtn" onclick="exportToPDF()">
+                    <span>📄</span> PDFレポート出力
+                </button>
+            </div>
+
             <div class="summary-cards">
                 <div class="card animate-in" style="animation-delay: 0.2s;">
                     <span class="card-icon">💎</span>
@@ -2751,6 +2865,433 @@
         }
 
         fetchFearGreedIndex();
+
+
+        // ============================================================
+        //  PDF エクスポート機能（html2canvas + jsPDF 日本語完全対応）
+        // ============================================================
+        async function exportToPDF() {
+            const btn = document.getElementById('pdfExportBtn');
+            if (!btn) return;
+
+            const totalItems = domesticStocksData.length + foreignStocksData.length + fundsData.length;
+            if (totalItems === 0) {
+                alert('CSVデータをアップロードしてからPDF出力してください。');
+                return;
+            }
+
+            // ── ① 生成中オーバーレイ表示 ──
+            btn.disabled = true;
+            btn.innerHTML = '⏳ 生成中...';
+            const overlay = document.createElement('div');
+            overlay.className = 'pdf-overlay';
+            overlay.innerHTML = `
+                <div class="pdf-overlay-box">
+                    <div class="pdf-spinner"></div>
+                    <div class="pdf-overlay-title">PDFレポートを生成しています</div>
+                    <div class="pdf-overlay-sub" id="pdfProgress">レポート用HTMLを構築中...</div>
+                </div>`;
+            document.body.appendChild(overlay);
+            const setProgress = (msg) => {
+                const el = document.getElementById('pdfProgress');
+                if (el) el.textContent = msg;
+            };
+
+            try {
+                const { jsPDF } = window.jspdf;
+
+                // ── ② レポート用の印刷専用HTMLを別ウィンドウで生成 ──
+                setProgress('レポートデータを集計中...');
+                await new Promise(r => setTimeout(r, 50));
+
+                // 集計データ
+                const domVal   = domesticStocksData.reduce((s,x) => s + x.marketValue, 0);
+                const forVal   = foreignStocksData.reduce((s,x) => s + x.marketValue, 0);
+                const funVal   = fundsData.reduce((s,x) => s + x.marketValue, 0);
+                const totalVal = domVal + forVal + funVal;
+                const domCost  = domesticStocksData.reduce((s,x) => s + x.avgPrice * x.quantity, 0);
+                const forCost  = foreignStocksData.reduce((s,x) => s + x.avgPrice * x.quantity, 0);
+                const funCost  = fundsData.reduce((s,x) => s + (x.acquiredTotal || 0), 0);
+                const totalCost   = domCost + forCost + funCost;
+                const totalPL     = totalVal - totalCost;
+                const totalPLRate = totalCost > 0 ? (totalPL / totalCost * 100) : 0;
+                const annualDiv   = domesticStocksData.reduce((s,x) => s + x.estimatedDividend, 0);
+                const annualDivAT = annualDiv * (1 - TAX_RATE);
+
+                // 月別配当集計
+                const monthly = new Array(12).fill(0);
+                domesticStocksData.forEach(stock => {
+                    const info = industryDatabase[stock.code];
+                    if (info && info.months) {
+                        const per = stock.estimatedDividend / info.months.length;
+                        info.months.forEach(m => { monthly[m-1] += per; });
+                    } else {
+                        monthly[2] += stock.estimatedDividend / 2;
+                        monthly[8] += stock.estimatedDividend / 2;
+                    }
+                });
+
+                const fmt     = v => '¥' + Math.round(Math.abs(v)).toLocaleString('ja-JP');
+                const fmtSign = v => (v >= 0 ? '+' : '-') + fmt(v);
+                const fmtPct  = v => (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+                const today   = new Date().toLocaleDateString('ja-JP', {year:'numeric',month:'long',day:'numeric'});
+                const fgLabel = fearGreedIndex === null ? '--' :
+                                fearGreedIndex < 25 ? '極度の恐怖' :
+                                fearGreedIndex < 45 ? '恐怖' :
+                                fearGreedIndex < 55 ? '中立' :
+                                fearGreedIndex < 75 ? '強欲' : '極度の強欲';
+                const fgColor = fearGreedIndex === null ? '#6b7280' :
+                                fearGreedIndex < 25 ? '#ef4444' :
+                                fearGreedIndex < 45 ? '#f97316' :
+                                fearGreedIndex < 55 ? '#d97706' :
+                                fearGreedIndex < 75 ? '#65a30d' : '#10b981';
+
+                // ── ③ 印刷用HTML生成 ──
+                setProgress('レポートHTMLを生成中...');
+                await new Promise(r => setTimeout(r, 50));
+
+                const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+                const currentMonth = new Date().getMonth();
+
+                // 国内株式テーブル行
+                const domRows = domesticStocksData.map((s, i) => {
+                    const isPos = s.profitRate >= 0;
+                    const bg = i % 2 === 0 ? '#f9fafb' : '#ffffff';
+                    return `<tr style="background:${bg}">
+                        <td style="text-align:center;color:#6b7280">${s.code}</td>
+                        <td>${s.name}</td>
+                        <td style="text-align:right">${s.quantity.toLocaleString()}</td>
+                        <td style="text-align:right">¥${Math.round(s.avgPrice).toLocaleString()}</td>
+                        <td style="text-align:right">¥${Math.round(s.currentPrice).toLocaleString()}</td>
+                        <td style="text-align:right;font-weight:600">${fmt(s.marketValue)}</td>
+                        <td style="text-align:right;color:${isPos?'#059669':'#ef4444'};font-weight:700">${fmtSign(s.profitLoss)}</td>
+                        <td style="text-align:right;color:${isPos?'#059669':'#ef4444'};font-weight:700">${fmtPct(s.profitRate)}</td>
+                    </tr>`;
+                }).join('');
+
+                // 外国株式テーブル行
+                const forRows = foreignStocksData.map((s, i) => {
+                    const isPos = s.profitRate >= 0;
+                    const bg = i % 2 === 0 ? '#f9fafb' : '#ffffff';
+                    return `<tr style="background:${bg}">
+                        <td style="text-align:center;color:#6b7280;font-weight:700">${s.code}</td>
+                        <td>${s.name}</td>
+                        <td style="text-align:right">${s.quantity.toLocaleString()}</td>
+                        <td style="text-align:right">¥${Math.round(s.avgPrice).toLocaleString()}</td>
+                        <td style="text-align:right">¥${Math.round(s.currentPrice).toLocaleString()}</td>
+                        <td style="text-align:right;font-weight:600">${fmt(s.marketValue)}</td>
+                        <td style="text-align:right;color:${isPos?'#059669':'#ef4444'};font-weight:700">${fmtPct(s.profitRate)}</td>
+                    </tr>`;
+                }).join('');
+
+                // 投資信託テーブル行
+                const funRows = fundsData.map((f, i) => {
+                    const isPos = f.profitRate >= 0;
+                    const bg = i % 2 === 0 ? '#f9fafb' : '#ffffff';
+                    const accountColors = {
+                        'account-nisa-tsumitate': '#fef3c7',
+                        'account-nisa-growth':    '#fce7f3',
+                        'account-ideco':          '#ede9fe',
+                        'account-tokutei':        '#dbeafe',
+                    };
+                    const accBg = accountColors[f.accountClass] || '#dbeafe';
+                    return `<tr style="background:${bg}">
+                        <td style="font-size:10px">${f.fundName}</td>
+                        <td style="text-align:center"><span style="background:${accBg};padding:2px 6px;border-radius:4px;font-size:10px;white-space:nowrap">${f.accountLabel}</span></td>
+                        <td style="text-align:right">${Math.round(f.quantity).toLocaleString()}口</td>
+                        <td style="text-align:right">¥${Math.round(f.basePrice).toLocaleString()}</td>
+                        <td style="text-align:right;font-weight:600">${fmt(f.marketValue)}</td>
+                        <td style="text-align:right;color:${isPos?'#059669':'#ef4444'};font-weight:700">${fmtSign(f.profitLoss)}</td>
+                        <td style="text-align:right;color:${isPos?'#059669':'#ef4444'};font-weight:700">${fmtPct(f.profitRate)}</td>
+                    </tr>`;
+                }).join('');
+
+                // 月別配当グリッド
+                const monthCards = monthNames.map((name, idx) => {
+                    const before = monthly[idx];
+                    const after  = before * (1 - TAX_RATE);
+                    const hasDiv = before > 0;
+                    const isCur  = idx === currentMonth;
+                    const border = isCur ? '2px solid #3b82f6' : (hasDiv ? '1.5px solid #10b981' : '1px solid #e5e7eb');
+                    const bg     = hasDiv ? '#f0fdf4' : '#f9fafb';
+                    return `<div style="border:${border};border-radius:10px;padding:12px;background:${bg};">
+                        <div style="font-size:11px;font-weight:700;color:${hasDiv?'#059669':'#9ca3af'};margin-bottom:6px">
+                            ${name}${isCur ? ' <span style="color:#3b82f6;font-size:10px">◀今月</span>' : ''}
+                        </div>
+                        ${hasDiv ? `
+                        <div style="font-size:14px;font-weight:800;color:#111827">${fmt(before)}</div>
+                        <div style="font-size:9px;color:#9ca3af;margin:2px 0">税引前（推定）</div>
+                        <div style="font-size:12px;font-weight:700;color:#10b981">${fmt(after)}</div>
+                        <div style="font-size:9px;color:#9ca3af">受取額（税引後）</div>
+                        ` : `<div style="font-size:12px;color:#9ca3af;margin-top:8px">配当なし</div>`}
+                    </div>`;
+                }).join('');
+
+                // 資産配分バー
+                const domPct = totalVal > 0 ? (domVal/totalVal*100).toFixed(1) : 0;
+                const forPct = totalVal > 0 ? (forVal/totalVal*100).toFixed(1) : 0;
+                const funPct = totalVal > 0 ? (funVal/totalVal*100).toFixed(1) : 0;
+
+                const htmlContent = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ポートフォリオレポート</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans JP',sans-serif; font-size:11px; color:#1f2937; background:#fff; }
+  .page { width:794px; min-height:1123px; padding:36px 40px; margin:0 auto; background:#fff; }
+  .page-break { page-break-before:always; }
+
+  /* ヘッダー */
+  .report-header { background:linear-gradient(135deg,#1e3a5f,#1d4ed8); border-radius:14px; padding:28px 32px; color:#fff; display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; }
+  .report-title { font-size:26px; font-weight:900; line-height:1.2; }
+  .report-date { font-size:12px; opacity:0.8; margin-top:6px; }
+  .fgi-badge { background:rgba(255,255,255,0.15); border-radius:10px; padding:10px 16px; text-align:center; }
+  .fgi-num { font-size:32px; font-weight:900; color:${fgColor}; }
+  .fgi-lbl { font-size:11px; opacity:0.85; margin-top:2px; }
+
+  /* サマリーカード */
+  .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; }
+  .sum-card { border-radius:10px; padding:14px; border:1.5px solid #e5e7eb; }
+  .sum-card-label { font-size:9px; color:#6b7280; font-weight:600; margin-bottom:6px; }
+  .sum-card-value { font-size:16px; font-weight:900; line-height:1.1; }
+  .sum-card-sub { font-size:9px; color:#6b7280; margin-top:4px; }
+
+  /* 資産配分バー */
+  .alloc-section { margin-bottom:20px; }
+  .alloc-title { font-size:12px; font-weight:700; margin-bottom:8px; color:#374151; }
+  .alloc-bar { display:flex; height:18px; border-radius:9px; overflow:hidden; }
+  .alloc-legend { display:flex; gap:20px; margin-top:8px; }
+  .alloc-dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:5px; }
+
+  /* セクションヘッダー */
+  .section-header { border-radius:8px; padding:10px 14px; color:#fff; font-size:13px; font-weight:700; margin-bottom:12px; display:flex; justify-content:space-between; }
+
+  /* テーブル */
+  table { width:100%; border-collapse:collapse; font-size:10px; }
+  th { background:#1e3a5f; color:#fff; padding:7px 8px; font-weight:700; font-size:9px; }
+  td { padding:6px 8px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+
+  /* 配当グリッド */
+  .div-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px; }
+
+  /* フッター */
+  .report-footer { margin-top:24px; padding-top:12px; border-top:1px solid #e5e7eb; display:flex; justify-content:space-between; font-size:9px; color:#9ca3af; }
+
+  /* 注意書き */
+  .notice { background:#fffbeb; border:1px solid #f59e0b; border-radius:8px; padding:10px 14px; font-size:10px; color:#92400e; margin:12px 0; }
+</style>
+</head>
+<body>
+
+<!-- ========== PAGE 1: サマリー ========== -->
+<div class="page" id="page1">
+
+  <!-- ヘッダー -->
+  <div class="report-header">
+    <div>
+      <div class="report-title">ポートフォリオ<br>総合レポート</div>
+      <div class="report-date">${today} 作成</div>
+    </div>
+    <div class="fgi-badge">
+      <div style="font-size:10px;opacity:0.8;margin-bottom:4px">Fear &amp; Greed Index</div>
+      <div class="fgi-num">${fearGreedIndex !== null ? fearGreedIndex : '--'}</div>
+      <div class="fgi-lbl">${fgLabel}</div>
+    </div>
+  </div>
+
+  <!-- サマリーカード -->
+  <div class="summary-grid">
+    <div class="sum-card" style="border-left:4px solid #2563eb">
+      <div class="sum-card-label">💎 総資産評価額</div>
+      <div class="sum-card-value" style="color:#2563eb">${fmt(totalVal)}</div>
+      <div class="sum-card-sub">全保有資産の時価合計</div>
+    </div>
+    <div class="sum-card" style="border-left:4px solid ${totalPL>=0?'#10b981':'#ef4444'}">
+      <div class="sum-card-label">📈 評価損益</div>
+      <div class="sum-card-value" style="color:${totalPL>=0?'#10b981':'#ef4444'}">${fmtSign(totalPL)}</div>
+      <div class="sum-card-sub">${fmtPct(totalPLRate)}</div>
+    </div>
+    <div class="sum-card" style="border-left:4px solid #059669">
+      <div class="sum-card-label">💰 年間配当（税引前）</div>
+      <div class="sum-card-value" style="color:#059669">${fmt(annualDiv)}</div>
+      <div class="sum-card-sub">税引後 ${fmt(annualDivAT)}</div>
+    </div>
+    <div class="sum-card" style="border-left:4px solid #7c3aed">
+      <div class="sum-card-label">📊 保有銘柄数</div>
+      <div class="sum-card-value" style="color:#7c3aed">${totalItems}銘柄</div>
+      <div class="sum-card-sub">国内${domesticStocksData.length} / 外国${foreignStocksData.length} / 投信${fundsData.length}</div>
+    </div>
+  </div>
+
+  <!-- 資産配分バー -->
+  <div class="alloc-section">
+    <div class="alloc-title">資産配分</div>
+    <div class="alloc-bar">
+      <div style="width:${domPct}%;background:#10b981;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">${domPct > 5 ? domPct+'%' : ''}</div>
+      <div style="width:${forPct}%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">${forPct > 5 ? forPct+'%' : ''}</div>
+      <div style="width:${funPct}%;background:#ec4899;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">${funPct > 5 ? funPct+'%' : ''}</div>
+    </div>
+    <div class="alloc-legend">
+      <div><span class="alloc-dot" style="background:#10b981"></span>国内株式 ${domPct}% (${fmt(domVal)})</div>
+      <div><span class="alloc-dot" style="background:#3b82f6"></span>外国株式 ${forPct}% (${fmt(forVal)})</div>
+      <div><span class="alloc-dot" style="background:#ec4899"></span>投資信託 ${funPct}% (${fmt(funVal)})</div>
+    </div>
+  </div>
+
+  <!-- 投資信託 -->
+  ${fundsData.length > 0 ? `
+  <div class="section-header" style="background:linear-gradient(90deg,#be185d,#ec4899)">
+    <span>📊 投資信託・iDeCo（${fundsData.length}本）</span>
+    <span>評価額合計 ${fmt(funVal)}</span>
+  </div>
+  <table>
+    <thead><tr>
+      <th style="text-align:left;width:35%">ファンド名</th>
+      <th>口座区分</th>
+      <th style="text-align:right">口数</th>
+      <th style="text-align:right">基準価額</th>
+      <th style="text-align:right">評価額</th>
+      <th style="text-align:right">評価損益</th>
+      <th style="text-align:right">損益率</th>
+    </tr></thead>
+    <tbody>${funRows}</tbody>
+  </table>
+  ` : ''}
+
+  <div class="report-footer">
+    <span>ポートフォリオ総合レポート | ${today}</span>
+    <span>1 / 3</span>
+  </div>
+</div>
+
+<!-- ========== PAGE 2: 国内株式 ========== -->
+<div class="page page-break" id="page2">
+  <div class="section-header" style="background:linear-gradient(90deg,#059669,#10b981)">
+    <span>🏠 国内株式（${domesticStocksData.length}銘柄）</span>
+    <span>評価額合計 ${fmt(domVal)}</span>
+  </div>
+  <table>
+    <thead><tr>
+      <th style="text-align:center">コード</th>
+      <th style="text-align:left">銘柄名</th>
+      <th style="text-align:right">保有数</th>
+      <th style="text-align:right">平均取得</th>
+      <th style="text-align:right">現在値</th>
+      <th style="text-align:right">評価額</th>
+      <th style="text-align:right">評価損益</th>
+      <th style="text-align:right">損益率</th>
+    </tr></thead>
+    <tbody>${domRows}</tbody>
+  </table>
+  <div class="report-footer">
+    <span>ポートフォリオ総合レポート | ${today}</span>
+    <span>2 / 3</span>
+  </div>
+</div>
+
+<!-- ========== PAGE 3: 外国株式 + 配当カレンダー ========== -->
+<div class="page page-break" id="page3">
+  ${foreignStocksData.length > 0 ? `
+  <div class="section-header" style="background:linear-gradient(90deg,#1d4ed8,#3b82f6)">
+    <span>🌎 外国株式（${foreignStocksData.length}銘柄）</span>
+    <span>評価額合計 ${fmt(forVal)}</span>
+  </div>
+  <table>
+    <thead><tr>
+      <th style="text-align:center">ティッカー</th>
+      <th style="text-align:left">銘柄名</th>
+      <th style="text-align:right">保有数</th>
+      <th style="text-align:right">平均取得</th>
+      <th style="text-align:right">現在値</th>
+      <th style="text-align:right">評価額</th>
+      <th style="text-align:right">損益率</th>
+    </tr></thead>
+    <tbody>${forRows}</tbody>
+  </table>
+  <div style="margin-bottom:20px"></div>
+  ` : ''}
+
+  <!-- 配当カレンダー -->
+  <div class="section-header" style="background:linear-gradient(90deg,#065f46,#059669)">
+    <span>💰 月別配当金カレンダー（推定）</span>
+    <span>年間合計 ${fmt(monthly.reduce((s,v)=>s+v,0))} → 税引後 ${fmt(monthly.reduce((s,v)=>s+v,0)*(1-TAX_RATE))}</span>
+  </div>
+  <div class="notice">
+    ⚠ 本データは「評価額×推定利回り」による概算です。iGrow等の実績値とは異なります。正確な金額は証券会社の配当通知書でご確認ください。
+  </div>
+  <div class="div-grid">${monthCards}</div>
+
+  <div class="report-footer">
+    <span>ポートフォリオ総合レポート | ${today}</span>
+    <span>3 / 3</span>
+  </div>
+</div>
+
+</body></html>`;
+
+                // ── ④ 非表示iframeでレンダリング → 各ページをキャプチャ ──
+                setProgress('HTMLレンダリング中...');
+                await new Promise(r => setTimeout(r, 100));
+
+                const iframe = document.createElement('iframe');
+                iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;border:none;visibility:hidden;';
+                document.body.appendChild(iframe);
+                iframe.contentDocument.open();
+                iframe.contentDocument.write(htmlContent);
+                iframe.contentDocument.close();
+
+                // フォント読み込みを待つ
+                await new Promise(r => setTimeout(r, 1500));
+
+                const doc = new jsPDF({ orientation:'portrait', unit:'px', format:'a4', hotfixes:['px_scaling'] });
+                const A4W = doc.internal.pageSize.getWidth();
+                const A4H = doc.internal.pageSize.getHeight();
+
+                const pageIds = ['page1', 'page2', 'page3'];
+
+                for (let i = 0; i < pageIds.length; i++) {
+                    setProgress(`ページ ${i+1}/3 をキャプチャ中...`);
+                    await new Promise(r => setTimeout(r, 100));
+
+                    const pageEl = iframe.contentDocument.getElementById(pageIds[i]);
+                    if (!pageEl) continue;
+
+                    const canvas = await html2canvas(pageEl, {
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        windowWidth: 794,
+                    });
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+                    if (i > 0) doc.addPage();
+                    doc.addImage(imgData, 'JPEG', 0, 0, A4W, A4H);
+                }
+
+                // iframe削除
+                document.body.removeChild(iframe);
+
+                // ── ⑤ 保存 ──
+                setProgress('PDFを保存中...');
+                const dateStr = new Date().toISOString().slice(0,10);
+                doc.save(`portfolio_report_${dateStr}.pdf`);
+
+            } catch(err) {
+                console.error('PDF生成エラー:', err);
+                alert('PDF生成中にエラーが発生しました。\n' + err.message);
+            } finally {
+                document.body.removeChild(overlay);
+                btn.disabled = false;
+                btn.innerHTML = '<span>📄</span> PDFレポート出力';
+            }
+        }
     </script>
 </body>
 </html>
