@@ -1609,9 +1609,9 @@
                     </div>
 
                     <div class="dividend-notice">
-                        <strong>⚠️ 計算方法について（iGrowとの差異）</strong><br>
-                        このツールは <strong>「評価額 × 配当利回り推定値」</strong> で計算しています。
-                        iGrow等のアプリは <strong>「1株あたり配当額 × 保有株数」</strong> の実績値を使うため金額が異なります。
+                        <strong>✅ iGrowと同じ計算式を使用</strong><br>
+                        <strong>「1株あたり配当額 × 保有株数」</strong> で計算しています（2025〜2026年予想配当額を使用）。
+                        最新の配当予想はIR発表により変わる場合があります。正確な金額は証券会社の配当通知書でご確認ください。
                         あくまで<strong>おおよその目安</strong>としてご利用ください。
                     </div>
 
@@ -1667,62 +1667,93 @@
         let fearGreedIndex = null;
         
         // 充実した業界データベース（配当利回りと配当月を追加）
+        // =====================================================
+        //  配当データベース（1株あたり年間配当額・権利確定月）
+        //  出典: 各社IR・みんかぶ・kabutore.biz (2025-2026予想)
+        //  dps = Dividend Per Share（1株あたり年間配当・円）
+        //  months = 権利確定月（この月末に保有で配当受取）
+        // =====================================================
         const industryDatabase = {
-            '1343': { name: '不動産', dividend: 3.5, months: [2, 8] }, // NFJ-REIT
-            '1414': { name: '建設', dividend: 3.2, months: [3, 9] }, // ショーボンドHD
-            '1489': { name: '金融', dividend: 4.0, months: [1, 4, 7, 10] }, // 日経高配当50 (毎月型と仮定)
-            '1928': { name: '建設', dividend: 4.5, months: [1, 7] }, // 積水ハウス
-            '1951': { name: '建設', dividend: 3.8, months: [3, 9] }, // エクシオグループ
-            '2003': { name: '食品', dividend: 2.8, months: [3, 9] }, // 日東富士製粉
-            '2124': { name: 'サービス', dividend: 2.5, months: [12] }, // JAC Recruitment
-            '2169': { name: 'IT', dividend: 3.0, months: [3, 9] }, // CDS
-            '2185': { name: 'IT', dividend: 3.5, months: [3, 9] }, // シイエム・シイ
-            '2269': { name: '食品', dividend: 2.2, months: [3, 9] }, // 明治HD
-            '2317': { name: 'IT', dividend: 2.0, months: [3] }, // システナ
-            '2391': { name: 'サービス', dividend: 3.8, months: [3, 9] }, // プラネット
-            '2462': { name: 'サービス', dividend: 2.7, months: [3, 9] }, // ライク
-            '2502': { name: '食品', dividend: 3.5, months: [12] }, // アサヒグループHD
-            '2659': { name: '小売', dividend: 2.8, months: [2, 8] }, // サンエー
-            '3003': { name: '不動産', dividend: 3.5, months: [12] }, // ヒューリック
-            '3053': { name: 'サービス', dividend: 2.0, months: [12] }, // ペッパーフードサービス
-            '3076': { name: 'サービス', dividend: 3.2, months: [3, 9] }, // あいHD
-            '3231': { name: '不動産', dividend: 3.8, months: [3, 9] }, // 野村不動産
-            '3333': { name: '小売', dividend: 2.5, months: [2, 8] }, // あさひ
-            '3771': { name: 'IT', dividend: 2.8, months: [3] }, // システムリサーチ
-            '3817': { name: 'IT', dividend: 3.0, months: [3, 9] }, // SRA HD
-            '3834': { name: 'IT', dividend: 2.5, months: [3] }, // 朝日ネット
-            '4008': { name: '化学', dividend: 3.2, months: [3, 9] }, // 住友精化
-            '4042': { name: '化学', dividend: 3.5, months: [3, 9] }, // 東ソー
-            '4097': { name: '化学', dividend: 3.0, months: [3] }, // 高圧ガス
-            '4248': { name: '製造', dividend: 2.8, months: [3] }, // 竹本容器
-            '4345': { name: 'IT', dividend: 2.5, months: [3] }, // シーティーエス
-            '4401': { name: '化学', dividend: 3.0, months: [3, 9] }, // ADEKA
-            '4540': { name: '医薬品', dividend: 2.5, months: [3, 9] }, // ツムラ
-            '4661': { name: 'エンタメ', dividend: 1.5, months: [3, 9] }, // オリエンタルランド
-            '4719': { name: 'IT', dividend: 2.8, months: [3] }, // アルファシステムズ
-            '4752': { name: 'IT', dividend: 2.5, months: [3] }, // 昭和システムエンジニア
-            '4832': { name: 'IT', dividend: 2.8, months: [3] }, // JFEシステムズ
-            '4972': { name: '化学', dividend: 3.0, months: [3] }, // 綜研化学
-            '5388': { name: '化学', dividend: 3.2, months: [3] }, // クニミネ工業
-            '6073': { name: 'サービス', dividend: 3.5, months: [3, 9] }, // アサンテ
-            '6345': { name: '機械', dividend: 3.0, months: [3] }, // アイチコーポレーション
-            '6432': { name: '機械', dividend: 2.8, months: [3] }, // 竹内製作所
-            '6458': { name: '機械', dividend: 3.2, months: [3] }, // 新晃工業
-            '6539': { name: 'サービス', dividend: 2.5, months: [3, 9] }, // MS-Japan
-            '6652': { name: '機械', dividend: 3.0, months: [3] }, // IDEC
-            '6785': { name: '機械', dividend: 3.2, months: [3] }, // 鈴木
-            '7723': { name: '機械', dividend: 3.5, months: [3] }, // 愛知時計
-            '7749': { name: '医薬品', dividend: 2.8, months: [3, 9] }, // メディキット
-            '7820': { name: '製造', dividend: 3.0, months: [3] }, // ニホンフラッシュ
-            '7860': { name: 'エンタメ', dividend: 2.0, months: [3, 9] }, // エイベックス
-            '7989': { name: '製造', dividend: 3.2, months: [12] }, // 立川ブラインド
-            '7994': { name: '製造', dividend: 3.0, months: [3] }, // オカムラ
-            '8058': { name: '商社', dividend: 4.5, months: [3, 9] }, // 三菱商事
-            '8130': { name: '小売', dividend: 3.2, months: [3, 9] }, // サンゲツ
-            '8309': { name: '金融', dividend: 4.0, months: [3, 9] }, // 三井住友トラスト
-            '8584': { name: '金融', dividend: 3.8, months: [3, 9] }, // ジャックス
-            '8593': { name: '金融', dividend: 4.2, months: [3, 9] }, // 三菱HCキャピタル
-            '9432': { name: 'IT', dividend: 2.5, months: [3, 9] }, // NTT
+            // ── ETF ──────────────────────────────────────
+            '1343': { name:'不動産ETF',  dps: 87,  months:[2,5,8,11] }, // NF J-REIT 四半期・年87円
+            '1489': { name:'高配当ETF',  dps:130,  months:[1,4,7,10] }, // NF日経高配当50 四半期
+            // ── 建設・不動産 ──────────────────────────────
+            '1414': { name:'建設',       dps: 58,  months:[3,9]  }, // ショーボンドHD 各29円
+            '1928': { name:'建設',       dps:144,  months:[1,7]  }, // 積水ハウス 各72円（2026予想）
+            '1951': { name:'建設',       dps: 90,  months:[3,9]  }, // エクシオグループ
+            '3003': { name:'不動産',     dps: 42,  months:[12]   }, // ヒューリック 年1回
+            '3231': { name:'不動産',     dps: 90,  months:[3,9]  }, // 野村不動産
+            // ── 食品 ──────────────────────────────────────
+            '2003': { name:'食品',       dps:280,  months:[3,9]  }, // 日東富士製粉 各140円
+            '2269': { name:'食品',       dps: 90,  months:[3,9]  }, // 明治HD
+            '2502': { name:'食品',       dps:100,  months:[12]   }, // アサヒグループHD 年1回
+            // ── サービス・人材 ────────────────────────────
+            '2124': { name:'サービス',   dps: 60,  months:[12]   }, // JAC Recruitment 年1回
+            '2185': { name:'IT',         dps: 60,  months:[3,9]  }, // シイエム・シイ
+            '2391': { name:'サービス',   dps: 48,  months:[3,9]  }, // プラネット
+            '2462': { name:'サービス',   dps: 48,  months:[3,9]  }, // ライク
+            '2659': { name:'小売',       dps: 50,  months:[2,8]  }, // サンエー
+            '2317': { name:'IT',         dps: 14,  months:[3]    }, // システナ 年1回
+            '2169': { name:'IT',         dps: 72,  months:[3,9]  }, // CDS
+            // ── 不動産・その他 ────────────────────────────
+            '3053': { name:'外食',       dps:  0,  months:[]     }, // ペッパーフード 無配
+            '3076': { name:'サービス',   dps: 80,  months:[3,9]  }, // あいHD
+            '3333': { name:'小売',       dps: 30,  months:[2,8]  }, // あさひ
+            // ── IT・ソフトウェア ──────────────────────────
+            '3771': { name:'IT',         dps: 80,  months:[3]    }, // システムリサーチ 年1回
+            '3817': { name:'IT',         dps:170,  months:[3,9]  }, // SRA HD
+            '3834': { name:'IT',         dps: 26,  months:[3]    }, // 朝日ネット 年1回
+            '4345': { name:'IT',         dps: 45,  months:[3]    }, // シーティーエス 年1回
+            '4719': { name:'IT',         dps:110,  months:[3]    }, // アルファシステムズ 年1回
+            '4752': { name:'IT',         dps: 50,  months:[3]    }, // 昭和システムエンジニア 年1回
+            '4832': { name:'IT',         dps:110,  months:[3]    }, // JFEシステムズ 年1回
+            '6539': { name:'サービス',   dps: 26,  months:[3,9]  }, // MS-Japan
+            '9687': { name:'IT',         dps:163,  months:[3]    }, // KSK 年1回（2026予想163円）
+            '9769': { name:'サービス',   dps: 90,  months:[3,9]  }, // 学究社
+            '9960': { name:'商社',       dps:120,  months:[3,9]  }, // 東テク
+            '9986': { name:'サービス',   dps:100,  months:[3,9]  }, // 蔵王産業
+            '9381': { name:'物流',       dps: 70,  months:[3,9]  }, // エーアイテイー
+            // ── 化学 ──────────────────────────────────────
+            '4008': { name:'化学',       dps:220,  months:[3,9]  }, // 住友精化 各110円
+            '4042': { name:'化学',       dps: 60,  months:[3,9]  }, // 東ソー
+            '4097': { name:'化学',       dps: 40,  months:[3]    }, // 高圧ガス 年1回
+            '4248': { name:'製造',       dps: 28,  months:[3]    }, // 竹本容器 年1回
+            '4401': { name:'化学',       dps:100,  months:[3,9]  }, // ADEKA
+            '4972': { name:'化学',       dps: 75,  months:[3]    }, // 綜研化学 年1回
+            '5388': { name:'化学',       dps: 50,  months:[3]    }, // クニミネ工業 年1回
+            // ── 医薬品・医療 ──────────────────────────────
+            '4540': { name:'医薬品',     dps: 60,  months:[3,9]  }, // ツムラ
+            '7749': { name:'医療',       dps: 55,  months:[3,9]  }, // メディキット
+            // ── エンタメ ──────────────────────────────────
+            '4661': { name:'エンタメ',   dps: 19,  months:[3,9]  }, // オリエンタルランド
+            '7860': { name:'エンタメ',   dps: 24,  months:[3,9]  }, // エイベックス
+            // ── 機械・製造 ────────────────────────────────
+            '6073': { name:'サービス',   dps: 52,  months:[3,9]  }, // アサンテ
+            '6345': { name:'機械',       dps: 46,  months:[3]    }, // アイチコーポレーション 年1回
+            '6432': { name:'機械',       dps:200,  months:[3]    }, // 竹内製作所 年1回
+            '6458': { name:'機械',       dps: 50,  months:[3]    }, // 新晃工業 年1回
+            '6652': { name:'機械',       dps: 90,  months:[3]    }, // IDEC 年1回
+            '6785': { name:'機械',       dps: 95,  months:[3]    }, // 鈴木 年1回
+            '7723': { name:'機械',       dps:135,  months:[3]    }, // 愛知時計 年1回
+            '7820': { name:'製造',       dps: 24,  months:[3]    }, // ニホンフラッシュ 年1回
+            '7860': { name:'エンタメ',   dps: 24,  months:[3,9]  }, // エイベックス
+            '7989': { name:'製造',       dps: 85,  months:[12]   }, // 立川ブラインド 年1回12月
+            '7994': { name:'製造',       dps: 60,  months:[3]    }, // オカムラ 年1回
+            // ── 商社 ──────────────────────────────────────
+            '8058': { name:'商社',       dps:200,  months:[3,9]  }, // 三菱商事 各100円
+            '8130': { name:'内装',       dps:130,  months:[3,9]  }, // サンゲツ
+            // ── 金融 ──────────────────────────────────────
+            '8309': { name:'金融',       dps:240,  months:[3,9]  }, // 三井住友トラスト 各120円
+            '8584': { name:'金融',       dps:180,  months:[3,9]  }, // ジャックス 各90円
+            '8593': { name:'金融',       dps: 40,  months:[3,9]  }, // 三菱HCキャピタル 各20円
+            '8725': { name:'保険',       dps:160,  months:[3,9]  }, // MS&AD 各80円
+            // ── 倉庫・物流 ────────────────────────────────
+            '9057': { name:'物流',       dps:110,  months:[3,9]  }, // 遠州トラック
+            '9303': { name:'倉庫',       dps:130,  months:[3,9]  }, // 住友倉庫
+            '9304': { name:'倉庫',       dps: 40,  months:[3,9]  }, // 渋沢倉庫
+            '9364': { name:'倉庫',       dps:165,  months:[3,9]  }, // 上組
+            // ── 電気・ガス ────────────────────────────────
+            '9513': { name:'電力',       dps:105,  months:[3,9]  }, // 電源開発 各52.5円（2026予想）
         };
 
         // 税率定数（配当金の源泉徴収税率: 20.315%）
@@ -2226,8 +2257,9 @@
                     const profitRate   = parseFloat((row[17] || '').replace(/[+,]/g, ''));
 
                     if (!isNaN(quantity) && !isNaN(currentPrice) && !isNaN(marketValue)) {
-                        const industryInfo = industryDatabase[code] || { name: 'その他', dividend: 3.0, months: [3, 9] };
-                        const estimatedDividend = marketValue * (industryInfo.dividend / 100);
+                        const industryInfo = industryDatabase[code] || { name: 'その他', dps: 0, months: [3, 9] };
+                        // ✅ iGrowと同じ計算式: 1株配当(dps) × 保有株数
+                        const estimatedDividend = (industryInfo.dps || 0) * quantity;
                         const priceChange = avgPrice > 0 ? ((currentPrice - avgPrice) / avgPrice) * 100 : 0;
 
                         let recommendation = 'HOLD';
@@ -2926,8 +2958,9 @@
                         const per = stock.estimatedDividend / info.months.length;
                         info.months.forEach(m => { monthly[m-1] += per; });
                     } else {
-                        monthly[2] += stock.estimatedDividend / 2;
-                        monthly[8] += stock.estimatedDividend / 2;
+                        // 未登録銘柄：3月・9月の年2回と仮定
+                        monthly[2] += stock.estimatedDividend / 2;  // 3月(index2)
+                        monthly[8] += stock.estimatedDividend / 2;  // 9月(index8)
                     }
                 });
 
@@ -2953,7 +2986,20 @@
                 const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
                 const currentMonth = new Date().getMonth();
 
-                // 国内株式テーブル行
+                // 国内株式テーブル行（2カラム用：左右に分割）
+                const domRowRenderer = (s, i) => {
+                    const isPos = s.profitRate >= 0;
+                    const bg = i % 2 === 0 ? '#f9fafb' : '#ffffff';
+                    return `<tr style="background:${bg}">
+                        <td style="text-align:center;color:#6b7280;font-weight:700">${s.code}</td>
+                        <td style="font-size:11px">${s.name}</td>
+                        <td style="text-align:right;font-weight:600;font-size:11px">${fmt(s.marketValue)}</td>
+                        <td style="text-align:right;color:${isPos?'#059669':'#ef4444'};font-weight:700;font-size:11px">${fmtPct(s.profitRate)}</td>
+                    </tr>`;
+                };
+                const half = Math.ceil(domesticStocksData.length / 2);
+                const domRowsLeft  = domesticStocksData.slice(0, half).map(domRowRenderer).join('');
+                const domRowsRight = domesticStocksData.slice(half).map(domRowRenderer).join('');
                 const domRows = domesticStocksData.map((s, i) => {
                     const isPos = s.profitRate >= 0;
                     const bg = i % 2 === 0 ? '#f9fafb' : '#ffffff';
@@ -2996,8 +3042,8 @@
                     };
                     const accBg = accountColors[f.accountClass] || '#dbeafe';
                     return `<tr style="background:${bg}">
-                        <td style="font-size:10px">${f.fundName}</td>
-                        <td style="text-align:center"><span style="background:${accBg};padding:2px 6px;border-radius:4px;font-size:10px;white-space:nowrap">${f.accountLabel}</span></td>
+                        <td>${f.fundName}</td>
+                        <td style="text-align:center"><span style="background:${accBg};padding:3px 8px;border-radius:4px;font-size:11px;white-space:nowrap">${f.accountLabel}</span></td>
                         <td style="text-align:right">${Math.round(f.quantity).toLocaleString()}口</td>
                         <td style="text-align:right">¥${Math.round(f.basePrice).toLocaleString()}</td>
                         <td style="text-align:right;font-weight:600">${fmt(f.marketValue)}</td>
@@ -3015,15 +3061,15 @@
                     const border = isCur ? '2px solid #3b82f6' : (hasDiv ? '1.5px solid #10b981' : '1px solid #e5e7eb');
                     const bg     = hasDiv ? '#f0fdf4' : '#f9fafb';
                     return `<div style="border:${border};border-radius:10px;padding:12px;background:${bg};">
-                        <div style="font-size:11px;font-weight:700;color:${hasDiv?'#059669':'#9ca3af'};margin-bottom:6px">
-                            ${name}${isCur ? ' <span style="color:#3b82f6;font-size:10px">◀今月</span>' : ''}
+                        <div style="font-size:13px;font-weight:700;color:${hasDiv?'#059669':'#9ca3af'};margin-bottom:6px">
+                            ${name}${isCur ? ' <span style="color:#3b82f6;font-size:11px">◀今月</span>' : ''}
                         </div>
                         ${hasDiv ? `
-                        <div style="font-size:14px;font-weight:800;color:#111827">${fmt(before)}</div>
-                        <div style="font-size:9px;color:#9ca3af;margin:2px 0">税引前（推定）</div>
-                        <div style="font-size:12px;font-weight:700;color:#10b981">${fmt(after)}</div>
-                        <div style="font-size:9px;color:#9ca3af">受取額（税引後）</div>
-                        ` : `<div style="font-size:12px;color:#9ca3af;margin-top:8px">配当なし</div>`}
+                        <div style="font-size:15px;font-weight:800;color:#111827">${fmt(before)}</div>
+                        <div style="font-size:11px;color:#9ca3af;margin:2px 0">税引前（推定）</div>
+                        <div style="font-size:13px;font-weight:700;color:#10b981">${fmt(after)}</div>
+                        <div style="font-size:11px;color:#9ca3af">受取額（税引後）</div>
+                        ` : `<div style="font-size:13px;color:#9ca3af;margin-top:8px">配当なし</div>`}
                     </div>`;
                 }).join('');
 
@@ -3040,49 +3086,50 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Noto Sans JP',sans-serif; font-size:11px; color:#1f2937; background:#fff; }
-  .page { width:794px; min-height:1123px; padding:36px 40px; margin:0 auto; background:#fff; }
+  body { font-family:'Noto Sans JP',sans-serif; font-size:13px; color:#1f2937; background:#fff; }
+  .page { width:794px; min-height:1123px; padding:32px 38px; margin:0 auto; background:#fff; }
   .page-break { page-break-before:always; }
 
   /* ヘッダー */
-  .report-header { background:linear-gradient(135deg,#1e3a5f,#1d4ed8); border-radius:14px; padding:28px 32px; color:#fff; display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; }
-  .report-title { font-size:26px; font-weight:900; line-height:1.2; }
-  .report-date { font-size:12px; opacity:0.8; margin-top:6px; }
-  .fgi-badge { background:rgba(255,255,255,0.15); border-radius:10px; padding:10px 16px; text-align:center; }
-  .fgi-num { font-size:32px; font-weight:900; color:${fgColor}; }
-  .fgi-lbl { font-size:11px; opacity:0.85; margin-top:2px; }
+  .report-header { background:linear-gradient(135deg,#1e3a5f,#1d4ed8); border-radius:14px; padding:26px 30px; color:#fff; display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; }
+  .report-title { font-size:28px; font-weight:900; line-height:1.2; }
+  .report-date { font-size:13px; opacity:0.8; margin-top:6px; }
+  .fgi-badge { background:rgba(255,255,255,0.15); border-radius:10px; padding:10px 18px; text-align:center; }
+  .fgi-num { font-size:36px; font-weight:900; color:${fgColor}; }
+  .fgi-lbl { font-size:12px; opacity:0.85; margin-top:2px; font-weight:700; }
 
   /* サマリーカード */
-  .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:20px; }
-  .sum-card { border-radius:10px; padding:14px; border:1.5px solid #e5e7eb; }
-  .sum-card-label { font-size:9px; color:#6b7280; font-weight:600; margin-bottom:6px; }
-  .sum-card-value { font-size:16px; font-weight:900; line-height:1.1; }
-  .sum-card-sub { font-size:9px; color:#6b7280; margin-top:4px; }
+  .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:18px; }
+  .sum-card { border-radius:10px; padding:13px 15px; border:1.5px solid #e5e7eb; }
+  .sum-card-label { font-size:11px; color:#6b7280; font-weight:600; margin-bottom:7px; }
+  .sum-card-value { font-size:19px; font-weight:900; line-height:1.1; }
+  .sum-card-sub { font-size:11px; color:#6b7280; margin-top:4px; }
 
   /* 資産配分バー */
-  .alloc-section { margin-bottom:20px; }
-  .alloc-title { font-size:12px; font-weight:700; margin-bottom:8px; color:#374151; }
-  .alloc-bar { display:flex; height:18px; border-radius:9px; overflow:hidden; }
-  .alloc-legend { display:flex; gap:20px; margin-top:8px; }
-  .alloc-dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:5px; }
+  .alloc-section { margin-bottom:18px; }
+  .alloc-title { font-size:13px; font-weight:700; margin-bottom:8px; color:#374151; }
+  .alloc-bar { display:flex; height:20px; border-radius:10px; overflow:hidden; }
+  .alloc-legend { display:flex; gap:20px; margin-top:8px; font-size:12px; }
+  .alloc-dot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:5px; vertical-align:middle; }
 
   /* セクションヘッダー */
-  .section-header { border-radius:8px; padding:10px 14px; color:#fff; font-size:13px; font-weight:700; margin-bottom:12px; display:flex; justify-content:space-between; }
+  .section-header { border-radius:8px; padding:10px 16px; color:#fff; font-size:14px; font-weight:700; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
 
   /* テーブル */
-  table { width:100%; border-collapse:collapse; font-size:10px; }
-  th { background:#1e3a5f; color:#fff; padding:7px 8px; font-weight:700; font-size:9px; }
-  td { padding:6px 8px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+  table { width:100%; border-collapse:collapse; }
+  th { background:#1e3a5f; color:#fff; padding:8px 8px; font-weight:700; font-size:11px; white-space:nowrap; }
+  td { padding:6px 8px; border-bottom:1px solid #f3f4f6; vertical-align:middle; font-size:12px; line-height:1.4; }
   tr:last-child td { border-bottom:none; }
+  tr:nth-child(even) td { background:#f9fafb; }
 
   /* 配当グリッド */
-  .div-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px; }
+  .div-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:10px; }
 
   /* フッター */
-  .report-footer { margin-top:24px; padding-top:12px; border-top:1px solid #e5e7eb; display:flex; justify-content:space-between; font-size:9px; color:#9ca3af; }
+  .report-footer { margin-top:20px; padding-top:10px; border-top:1px solid #e5e7eb; display:flex; justify-content:space-between; font-size:11px; color:#9ca3af; }
 
   /* 注意書き */
-  .notice { background:#fffbeb; border:1px solid #f59e0b; border-radius:8px; padding:10px 14px; font-size:10px; color:#92400e; margin:12px 0; }
+  .notice { background:#fffbeb; border:1px solid #f59e0b; border-radius:8px; padding:9px 12px; font-size:11px; color:#92400e; margin:10px 0; line-height:1.6; }
 </style>
 </head>
 <body>
@@ -3097,7 +3144,7 @@
       <div class="report-date">${today} 作成</div>
     </div>
     <div class="fgi-badge">
-      <div style="font-size:10px;opacity:0.8;margin-bottom:4px">Fear &amp; Greed Index</div>
+      <div style="font-size:12px;opacity:0.8;margin-bottom:4px">Fear &amp; Greed Index</div>
       <div class="fgi-num">${fearGreedIndex !== null ? fearGreedIndex : '--'}</div>
       <div class="fgi-lbl">${fgLabel}</div>
     </div>
@@ -3131,9 +3178,9 @@
   <div class="alloc-section">
     <div class="alloc-title">資産配分</div>
     <div class="alloc-bar">
-      <div style="width:${domPct}%;background:#10b981;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">${domPct > 5 ? domPct+'%' : ''}</div>
-      <div style="width:${forPct}%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">${forPct > 5 ? forPct+'%' : ''}</div>
-      <div style="width:${funPct}%;background:#ec4899;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700">${funPct > 5 ? funPct+'%' : ''}</div>
+      <div style="width:${domPct}%;background:#10b981;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700">${domPct > 5 ? domPct+'%' : ''}</div>
+      <div style="width:${forPct}%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700">${forPct > 5 ? forPct+'%' : ''}</div>
+      <div style="width:${funPct}%;background:#ec4899;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700">${funPct > 5 ? funPct+'%' : ''}</div>
     </div>
     <div class="alloc-legend">
       <div><span class="alloc-dot" style="background:#10b981"></span>国内株式 ${domPct}% (${fmt(domVal)})</div>
@@ -3168,25 +3215,36 @@
   </div>
 </div>
 
-<!-- ========== PAGE 2: 国内株式 ========== -->
+<!-- ========== PAGE 2: 国内株式（2カラム） ========== -->
 <div class="page page-break" id="page2">
   <div class="section-header" style="background:linear-gradient(90deg,#059669,#10b981)">
     <span>🏠 国内株式（${domesticStocksData.length}銘柄）</span>
     <span>評価額合計 ${fmt(domVal)}</span>
   </div>
-  <table>
-    <thead><tr>
-      <th style="text-align:center">コード</th>
-      <th style="text-align:left">銘柄名</th>
-      <th style="text-align:right">保有数</th>
-      <th style="text-align:right">平均取得</th>
-      <th style="text-align:right">現在値</th>
-      <th style="text-align:right">評価額</th>
-      <th style="text-align:right">評価損益</th>
-      <th style="text-align:right">損益率</th>
-    </tr></thead>
-    <tbody>${domRows}</tbody>
-  </table>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <table>
+        <thead><tr>
+          <th style="text-align:center;width:36px">コード</th>
+          <th style="text-align:left">銘柄名</th>
+          <th style="text-align:right">評価額</th>
+          <th style="text-align:right">損益率</th>
+        </tr></thead>
+        <tbody>${domRowsLeft}</tbody>
+      </table>
+    </div>
+    <div>
+      <table>
+        <thead><tr>
+          <th style="text-align:center;width:36px">コード</th>
+          <th style="text-align:left">銘柄名</th>
+          <th style="text-align:right">評価額</th>
+          <th style="text-align:right">損益率</th>
+        </tr></thead>
+        <tbody>${domRowsRight}</tbody>
+      </table>
+    </div>
+  </div>
   <div class="report-footer">
     <span>ポートフォリオ総合レポート | ${today}</span>
     <span>2 / 3</span>
@@ -3221,7 +3279,7 @@
     <span>年間合計 ${fmt(monthly.reduce((s,v)=>s+v,0))} → 税引後 ${fmt(monthly.reduce((s,v)=>s+v,0)*(1-TAX_RATE))}</span>
   </div>
   <div class="notice">
-    ⚠ 本データは「評価額×推定利回り」による概算です。iGrow等の実績値とは異なります。正確な金額は証券会社の配当通知書でご確認ください。
+    ⚠ 本データは「1株配当額×保有株数」で算出（2025〜2026予想値使用）。配当予想はIR発表により変動します。正確な金額は証券会社の配当通知書でご確認ください。
   </div>
   <div class="div-grid">${monthCards}</div>
 
@@ -3247,9 +3305,9 @@
                 // フォント読み込みを待つ
                 await new Promise(r => setTimeout(r, 1500));
 
-                const doc = new jsPDF({ orientation:'portrait', unit:'px', format:'a4', hotfixes:['px_scaling'] });
-                const A4W = doc.internal.pageSize.getWidth();
-                const A4H = doc.internal.pageSize.getHeight();
+                const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+                const A4W = 210;  // mm
+                const A4H = 297;  // mm
 
                 const pageIds = ['page1', 'page2', 'page3'];
 
@@ -3269,10 +3327,41 @@
                         windowWidth: 794,
                     });
 
-                    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-                    if (i > 0) doc.addPage();
-                    doc.addImage(imgData, 'JPEG', 0, 0, A4W, A4H);
+                    // キャプチャ画像の実際の縦横比を維持してA4に収める
+                    const canvasW = canvas.width;
+                    const canvasH = canvas.height;
+                    // A4幅(595px)に合わせた高さを計算
+                    const scaledH = (canvasH / canvasW) * A4W;
+
+                    if (scaledH <= A4H * 1.05) {
+                        // 1ページ内に収まる
+                        if (i > 0) doc.addPage();
+                        doc.addImage(imgData, 'JPEG', 0, 0, A4W, scaledH);
+                    } else {
+                        // 複数ページに分割（縦に長いページ対応）
+                        if (i > 0) doc.addPage();
+                        let remainH = scaledH;
+                        let srcY = 0;
+                        let pageIdx = 0;
+                        while (remainH > 0) {
+                            const sliceH = Math.min(A4H, remainH);
+                            const srcSliceH = (sliceH / scaledH) * canvasH;
+                            // スライスキャンバスを作成
+                            const sliceCanvas = document.createElement('canvas');
+                            sliceCanvas.width = canvasW;
+                            sliceCanvas.height = srcSliceH;
+                            const ctx = sliceCanvas.getContext('2d');
+                            ctx.drawImage(canvas, 0, srcY, canvasW, srcSliceH, 0, 0, canvasW, srcSliceH);
+                            const sliceImg = sliceCanvas.toDataURL('image/jpeg', 0.95);
+                            if (pageIdx > 0) doc.addPage();
+                            doc.addImage(sliceImg, 'JPEG', 0, 0, A4W, sliceH);
+                            srcY += srcSliceH;
+                            remainH -= sliceH;
+                            pageIdx++;
+                        }
+                    }
                 }
 
                 // iframe削除
