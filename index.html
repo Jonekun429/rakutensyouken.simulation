@@ -29,93 +29,80 @@
             --red:          #ef4444;
             --blue-accent:  #1d4ed8;
         }
-
         * { margin:0; padding:0; box-sizing:border-box; }
-
         body {
             font-family:'Outfit',sans-serif;
             background: linear-gradient(135deg,#e6f5f2 0%,#d9eeea 100%);
-            min-height:100vh;
-            padding:20px;
-            color:var(--text-primary);
+            min-height:100vh; padding:20px; color:var(--text-primary);
         }
-
         .container { max-width:1600px; margin:0 auto; }
 
         /* ── Header ── */
         header {
-            background:var(--bg-card);
-            padding:40px;
-            border-radius:24px;
-            box-shadow:var(--shadow);
-            margin-bottom:30px;
-            border:2px solid var(--border);
-            position:relative;
-            overflow:hidden;
+            background:var(--bg-card); padding:40px; border-radius:24px;
+            box-shadow:var(--shadow); margin-bottom:30px; border:2px solid var(--border);
+            position:relative; overflow:hidden;
         }
         header::before {
-            content:'';
-            position:absolute;
-            top:0; left:0; right:0;
-            height:6px;
+            content:''; position:absolute; top:0; left:0; right:0; height:6px;
             background:linear-gradient(90deg,var(--primary),var(--accent),var(--primary));
-            background-size:200% 100%;
-            animation:shimmer 3s linear infinite;
+            background-size:200% 100%; animation:shimmer 3s linear infinite;
         }
-        @keyframes shimmer {
-            0%{background-position:-200% 0}
-            100%{background-position:200% 0}
-        }
-        .header-content {
-            display:flex;
-            justify-content:space-between;
-            align-items:flex-start;
-            flex-wrap:wrap;
-            gap:20px;
-        }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        .header-content { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:20px; }
         h1 {
-            font-size:42px;
-            font-weight:800;
+            font-size:42px; font-weight:800;
             background:linear-gradient(135deg,var(--primary),var(--dark));
-            -webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
-            background-clip:text;
-            margin-bottom:8px;
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px;
         }
         .subtitle { color:var(--text-muted); font-size:16px; }
 
+        /* ── Saved data banner ── */
+        .saved-data-banner {
+            display:none; align-items:center; justify-content:space-between;
+            background:linear-gradient(135deg,#ecfdf5,#d1fae5);
+            border:2px solid #34d399; border-radius:12px;
+            padding:12px 18px; margin-top:16px; flex-wrap:wrap; gap:10px;
+        }
+        .saved-data-banner.visible { display:flex; }
+        .saved-data-info { display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; color:#065f46; }
+        .saved-data-date { font-size:12px; color:#6b7280; font-weight:400; }
+        .saved-data-actions { display:flex; gap:8px; }
+        .btn-sm {
+            padding:7px 14px; border-radius:8px; border:none; cursor:pointer;
+            font-size:13px; font-weight:700; font-family:'Outfit',sans-serif; transition:all .2s;
+        }
+        .btn-clear { background:#fee2e2; color:#991b1b; }
+        .btn-clear:hover { background:#fecaca; }
+
         /* ── Fear & Greed ── */
         .fear-greed-widget {
-            background:white;
-            padding:16px 20px;
-            border-radius:16px;
-            border:2px solid var(--border);
-            flex:0 0 auto;
-            max-width:600px;
-            width:100%;
-            position:relative;
+            background:white; padding:16px 20px; border-radius:16px;
+            border:2px solid var(--border); flex:0 0 auto; max-width:600px; width:100%; position:relative;
         }
+        .fgi-header-row {
+            display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;
+        }
+        .fear-greed-label { font-size:15px; font-weight:800; color:#1f2937; font-family:Arial,sans-serif; line-height:1.2; }
+        .fgi-refresh-btn {
+            display:inline-flex; align-items:center; gap:6px;
+            background:var(--primary); color:white; border:none; border-radius:20px;
+            padding:5px 12px; font-size:12px; font-weight:700; cursor:pointer;
+            font-family:'Outfit',sans-serif; transition:all .2s; white-space:nowrap;
+        }
+        .fgi-refresh-btn:hover { background:var(--dark); transform:translateY(-1px); }
+        .fgi-refresh-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+        .fgi-refresh-btn .spin { display:inline-block; animation:spin .8s linear infinite; }
+        @keyframes spin { to{transform:rotate(360deg);} }
         .fgi-cnn-link {
-            position:absolute;
-            top:12px; right:12px;
-            font-size:11px;
-            color:var(--primary);
-            text-decoration:none;
-            font-weight:700;
-            background:var(--light);
-            padding:3px 8px;
-            border-radius:20px;
-            border:1px solid var(--border);
-            transition:all .2s;
+            font-size:11px; color:var(--primary); text-decoration:none; font-weight:700;
+            background:var(--light); padding:3px 8px; border-radius:20px; border:1px solid var(--border);
+            transition:all .2s; white-space:nowrap;
         }
-        .fgi-cnn-link:hover {
-            background:var(--primary);
-            color:white;
-        }
-        .fgi-top-row { display:flex; align-items:flex-start; gap:12px; }
+        .fgi-cnn-link:hover { background:var(--primary); color:white; }
+        .fgi-top-row { display:flex; align-items:flex-start; gap:12px; margin-top:6px; }
         .fgi-left { flex:1; min-width:0; }
         .fgi-right { flex:0 0 160px; }
-        .fear-greed-label { font-size:15px; font-weight:800; color:#1f2937; font-family:Arial,sans-serif; line-height:1.2; }
         .fear-greed-subtitle { font-size:11px; color:#6b7280; margin-bottom:8px; }
         .fgi-score-row { display:flex; align-items:center; gap:10px; }
         .fear-greed-number { font-size:48px; font-weight:900; font-family:Arial,sans-serif; line-height:1; }
@@ -124,14 +111,7 @@
         .fgi-comparison { font-size:11px; color:var(--text-muted); }
         .fear-greed-gauge-container { width:160px; }
         .fear-greed-gauge-container svg { width:100%; height:auto; }
-        .fgi-indicators {
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:6px 16px;
-            margin-top:10px;
-            padding-top:10px;
-            border-top:1px solid var(--border);
-        }
+        .fgi-indicators { display:grid; grid-template-columns:1fr 1fr; gap:6px 16px; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
         .fgi-indicator-row { margin-bottom:0; }
         .fgi-ind-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; }
         .fgi-ind-label { font-size:11px; font-weight:600; color:var(--text-secondary); }
@@ -139,24 +119,22 @@
         .fgi-bar-bg { width:100%; height:4px; background:#e5e7eb; border-radius:2px; overflow:hidden; margin-bottom:1px; }
         .fgi-bar-fill { height:100%; border-radius:2px; transition:width .8s ease; }
         .fgi-ind-desc { font-size:9px; color:var(--text-muted); }
+        .fgi-last-updated { font-size:10px; color:#9ca3af; margin-top:6px; text-align:right; }
 
         /* ── Upload ── */
-        .upload-section { margin-top:25px; display:flex; gap:15px; flex-wrap:wrap; }
+        .upload-section { margin-top:25px; display:flex; gap:15px; flex-wrap:wrap; align-items:center; }
         .file-input-wrapper { position:relative; display:inline-block; }
         input[type="file"] { position:absolute; opacity:0; width:100%; height:100%; cursor:pointer; }
         .file-label {
-            display:inline-flex; align-items:center; gap:12px;
-            padding:16px 32px;
+            display:inline-flex; align-items:center; gap:12px; padding:16px 32px;
             background:linear-gradient(135deg,var(--primary),var(--dark));
             color:white; border-radius:12px; cursor:pointer; font-weight:700; font-size:16px;
-            transition:all .3s cubic-bezier(.4,0,.2,1);
-            box-shadow:0 4px 12px rgba(0,93,77,.3);
+            transition:all .3s cubic-bezier(.4,0,.2,1); box-shadow:0 4px 12px rgba(0,93,77,.3);
         }
         .file-label:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,93,77,.4); }
         .file-status {
-            display:inline-flex; align-items:center; gap:8px;
-            padding:8px 16px; background:var(--light); border-radius:8px;
-            font-size:14px; font-weight:600; color:var(--text-primary);
+            display:inline-flex; align-items:center; gap:8px; padding:8px 16px;
+            background:var(--light); border-radius:8px; font-size:14px; font-weight:600; color:var(--text-primary);
         }
 
         /* ── Info card ── */
@@ -173,13 +151,9 @@
         .summary-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:24px; margin-bottom:30px; }
         .card {
             background:var(--bg-card); padding:28px; border-radius:20px;
-            box-shadow:var(--shadow); border:2px solid var(--border);
-            transition:all .3s ease; position:relative; overflow:hidden;
+            box-shadow:var(--shadow); border:2px solid var(--border); transition:all .3s ease; position:relative; overflow:hidden;
         }
-        .card::before {
-            content:''; position:absolute; top:0; left:0; right:0; height:4px;
-            background:linear-gradient(90deg,var(--primary),var(--accent));
-        }
+        .card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,var(--primary),var(--accent)); }
         .card:hover { transform:translateY(-4px); box-shadow:var(--shadow-hover); }
         .card-icon { font-size:32px; margin-bottom:12px; display:block; }
         .card-title { font-size:13px; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:1.2px; font-weight:600; }
@@ -213,20 +187,13 @@
         }
         .pdf-overlay-box { background:white; border-radius:20px; padding:40px 50px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.3); }
         .pdf-spinner { width:48px; height:48px; border:5px solid #e5e7eb; border-top-color:#2563eb; border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 16px; }
-        @keyframes spin { to { transform:rotate(360deg); } }
         .pdf-overlay-title { font-size:18px; font-weight:700; color:#1f2937; margin-bottom:6px; }
         .pdf-overlay-sub { font-size:13px; color:#6b7280; }
 
         /* ── Market analysis ── */
-        .market-analysis {
-            background:white; padding:32px; border-radius:20px;
-            box-shadow:var(--shadow); border:2px solid var(--border); margin-bottom:30px;
-        }
+        .market-analysis { background:white; padding:32px; border-radius:20px; box-shadow:var(--shadow); border:2px solid var(--border); margin-bottom:30px; }
         .market-analysis h2 { color:var(--text-primary); font-size:24px; font-weight:800; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
-        .analysis-section {
-            background:linear-gradient(135deg,var(--light),white);
-            padding:24px; border-radius:16px; margin-bottom:20px; border-left:4px solid var(--primary);
-        }
+        .analysis-section { background:linear-gradient(135deg,var(--light),white); padding:24px; border-radius:16px; margin-bottom:20px; border-left:4px solid var(--primary); }
         .analysis-section h3 { color:var(--text-primary); font-size:18px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
         .analysis-text { color:var(--text-secondary); line-height:1.8; font-size:15px; }
         .analysis-highlight { background:#fef3c7; padding:3px 8px; border-radius:4px; font-weight:700; color:#92400e; }
@@ -238,11 +205,7 @@
         .industry-summary { background:white; padding:32px; border-radius:20px; box-shadow:var(--shadow); border:2px solid var(--border); margin-bottom:30px; }
         .industry-summary h2 { color:var(--text-primary); font-size:22px; font-weight:700; margin-bottom:20px; }
         .industry-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; }
-        .industry-item {
-            background:linear-gradient(135deg,var(--light),white);
-            padding:20px; border-radius:12px; border:2px solid var(--border);
-            transition:all .3s ease; cursor:pointer;
-        }
+        .industry-item { background:linear-gradient(135deg,var(--light),white); padding:20px; border-radius:12px; border:2px solid var(--border); transition:all .3s ease; cursor:pointer; }
         .industry-item:hover { transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--primary); }
         .industry-item-name { font-size:14px; font-weight:700; color:var(--text-primary); margin-bottom:8px; }
         .industry-item-count { font-size:28px; font-weight:800; color:var(--primary); font-family:'JetBrains Mono',monospace; margin-bottom:4px; }
@@ -258,10 +221,7 @@
             color:var(--text-muted); font-weight:600; font-size:15px; border-radius:12px; cursor:pointer;
             transition:all .3s ease; font-family:'Outfit',sans-serif;
         }
-        .tab-button.active {
-            background:linear-gradient(135deg,var(--primary),var(--dark));
-            color:white; box-shadow:0 4px 12px rgba(0,93,77,.3);
-        }
+        .tab-button.active { background:linear-gradient(135deg,var(--primary),var(--dark)); color:white; box-shadow:0 4px 12px rgba(0,93,77,.3); }
         .tab-button:hover:not(.active) { background:var(--light); color:var(--text-primary); }
         .tab-content { display:none; }
         .tab-content.active { display:block; }
@@ -313,10 +273,7 @@
 
         /* ── Charts ── */
         .chart-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(500px,1fr)); gap:24px; margin-bottom:30px; }
-        .chart-container {
-            background:var(--bg-card); padding:32px; border-radius:20px;
-            box-shadow:var(--shadow); border:2px solid var(--border); min-height:450px; display:flex; flex-direction:column;
-        }
+        .chart-container { background:var(--bg-card); padding:32px; border-radius:20px; box-shadow:var(--shadow); border:2px solid var(--border); min-height:450px; display:flex; flex-direction:column; }
         .chart-container.auto-height { height:auto; min-height:600px; }
         .chart-container h2 { margin-bottom:10px; color:var(--text-primary); font-size:22px; font-weight:700; flex-shrink:0; }
         .chart-container p { flex-shrink:0; }
@@ -361,7 +318,7 @@
         .mc-stocks-tooltip { position:absolute; bottom:100%; left:50%; transform:translateX(-50%); background:#1f2937; color:white; border-radius:8px; padding:8px 12px; font-size:11px; white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .2s; z-index:10; }
         .month-card:hover .mc-stocks-tooltip { opacity:1; }
 
-        /* ── Modals (shared) ── */
+        /* ── Modals ── */
         .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,.5); animation:fadeIn .3s ease; }
         .modal.active { display:flex; align-items:center; justify-content:center; }
         .modal-content { background:white; padding:40px; border-radius:20px; max-width:800px; width:90%; max-height:80vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.3); animation:slideUp .3s ease; }
@@ -382,11 +339,7 @@
 
         /* ── Stock Detail Modal ── */
         #stockDetailModal .modal-content { max-width:900px; }
-        .sdm-header-bar {
-            background:linear-gradient(135deg,var(--primary),var(--dark));
-            border-radius:14px; padding:20px 24px; margin-bottom:24px; color:white;
-            display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;
-        }
+        .sdm-header-bar { background:linear-gradient(135deg,var(--primary),var(--dark)); border-radius:14px; padding:20px 24px; margin-bottom:24px; color:white; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; }
         .sdm-code { font-size:14px; font-weight:700; opacity:.8; font-family:'JetBrains Mono',monospace; }
         .sdm-name { font-size:26px; font-weight:800; line-height:1.2; }
         .sdm-industry { font-size:12px; opacity:.8; margin-top:4px; }
@@ -426,10 +379,11 @@
         .no-data p { color:var(--text-muted); font-size:16px; }
 
         @media(max-width:768px) {
-            h1{font-size:32px;}
+            h1{font-size:28px;}
             .chart-grid{grid-template-columns:1fr;}
             .chart-container{height:400px;}
             .fear-greed-widget{min-width:100%;}
+            .fgi-indicators{grid-template-columns:1fr;}
         }
         @media(max-width:1200px){ .chart-grid{grid-template-columns:1fr;} }
         @media print { .pdf-export-bar,.upload-section,.info-card,.analysis-tabs,.tab-button,header{display:none!important;} }
@@ -446,10 +400,17 @@
 
             <!-- Fear & Greed Widget -->
             <div class="fear-greed-widget" id="fearGreedWidget">
-                <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" class="fgi-cnn-link">CNN で詳細を見る →</a>
+                <div class="fgi-header-row">
+                    <div class="fear-greed-label">Fear &amp; Greed Index</div>
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <button class="fgi-refresh-btn" id="fgiRefreshBtn" onclick="refreshFearGreed()">
+                            <span id="fgiRefreshIcon">🔄</span> 更新
+                        </button>
+                        <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank" class="fgi-cnn-link">CNN →</a>
+                    </div>
+                </div>
                 <div class="fgi-top-row">
                     <div class="fgi-left">
-                        <div class="fear-greed-label">Fear &amp; Greed Index</div>
                         <div class="fear-greed-subtitle">市場の感情指数（CNN公式）</div>
                         <div class="fgi-score-row">
                             <div class="fear-greed-number" id="fearGreedValue">--</div>
@@ -482,6 +443,7 @@
                 <div class="fgi-indicators" id="fgiIndicators">
                     <div style="color:#9ca3af;font-size:12px;padding:8px 0">指標データ読み込み中...</div>
                 </div>
+                <div class="fgi-last-updated" id="fgiLastUpdated"></div>
             </div>
         </div>
 
@@ -495,13 +457,27 @@
             </div>
             <div id="uploadStatus"></div>
         </div>
+
+        <!-- Saved data banner -->
+        <div class="saved-data-banner" id="savedDataBanner">
+            <div class="saved-data-info">
+                <span>💾</span>
+                <div>
+                    <div id="savedDataText">前回のデータを読み込みました</div>
+                    <div class="saved-data-date" id="savedDataDate"></div>
+                </div>
+            </div>
+            <div class="saved-data-actions">
+                <button class="btn-sm btn-clear" onclick="clearSavedData()">🗑 データを消去</button>
+            </div>
+        </div>
     </header>
 
     <div class="info-card animate-in" style="animation-delay:.1s">
         <h3>📚 このダッシュボードでできること</h3>
         <ul>
             <li>株式・投資信託・iDeCo・外国株式を一括で管理・分析</li>
-            <li>どの投資がいくら儲かっているか一目で確認</li>
+            <li>データは自動保存 — 次回アクセス時・ホーム画面追加後も維持</li>
             <li>銘柄名をクリックすると詳細情報・配当カレンダーが表示される</li>
             <li>業界別の投資状況を可視化（何件投資しているか表示）</li>
             <li>どの株を買い増しすべきか、AIが教えてくれる</li>
@@ -593,16 +569,11 @@
                     <p>銘柄行をクリックすると詳細情報が表示されます</p>
                 </div>
                 <div style="overflow-x:auto">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>銘柄</th><th>業界</th><th>保有数</th><th>平均取得額</th><th>現在価格</th>
-                                <th>評価損益</th><th>損益率</th><th>時価評価額</th>
-                                <th>アドバイス</th><th>推奨アクション</th><th>分析理由</th>
-                            </tr>
-                        </thead>
-                        <tbody id="domesticTableBody"></tbody>
-                    </table>
+                    <table><thead><tr>
+                        <th>銘柄</th><th>業界</th><th>保有数</th><th>平均取得額</th><th>現在価格</th>
+                        <th>評価損益</th><th>損益率</th><th>時価評価額</th>
+                        <th>アドバイス</th><th>推奨アクション</th><th>分析理由</th>
+                    </tr></thead><tbody id="domesticTableBody"></tbody></table>
                 </div>
             </div>
         </div>
@@ -615,16 +586,11 @@
                     <p>銘柄行をクリックすると詳細情報が表示されます</p>
                 </div>
                 <div style="overflow-x:auto">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ティッカー</th><th>銘柄名</th><th>保有数</th><th>平均取得額</th><th>現在価格</th>
-                                <th>評価損益</th><th>損益率</th><th>時価評価額</th>
-                                <th>アドバイス</th><th>推奨アクション</th><th>分析理由</th>
-                            </tr>
-                        </thead>
-                        <tbody id="foreignTableBody"></tbody>
-                    </table>
+                    <table><thead><tr>
+                        <th>ティッカー</th><th>銘柄名</th><th>保有数</th><th>平均取得額</th><th>現在価格</th>
+                        <th>評価損益</th><th>損益率</th><th>時価評価額</th>
+                        <th>アドバイス</th><th>推奨アクション</th><th>分析理由</th>
+                    </tr></thead><tbody id="foreignTableBody"></tbody></table>
                 </div>
             </div>
         </div>
@@ -637,15 +603,10 @@
                     <p>保有ファンドの一覧とパフォーマンス</p>
                 </div>
                 <div style="overflow-x:auto">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ファンド名</th><th>口座</th><th>保有口数</th><th>平均取得額</th>
-                                <th>基準価額</th><th>評価損益</th><th>損益率</th><th>時価評価額</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fundsTableBody"></tbody>
-                    </table>
+                    <table><thead><tr>
+                        <th>ファンド名</th><th>口座</th><th>保有口数</th><th>平均取得額</th>
+                        <th>基準価額</th><th>評価損益</th><th>損益率</th><th>時価評価額</th>
+                    </tr></thead><tbody id="fundsTableBody"></tbody></table>
                 </div>
             </div>
         </div>
@@ -690,7 +651,7 @@
                     <strong>「1株あたり配当額 × 保有株数」</strong> で計算しています（2025〜2026年予想配当額を使用）。
                     最新の配当予想はIR発表により変わる場合があります。あくまで<strong>おおよその目安</strong>としてご利用ください。
                 </div>
-                <div class="dividend-total-banner" id="dividendTotalBanner">
+                <div class="dividend-total-banner">
                     <div class="dividend-total-left">
                         <div class="total-label">📊 年間配当予測（税引前）</div>
                         <div class="total-amount" id="divTotalBefore">¥--</div>
@@ -705,13 +666,13 @@
                 <div class="month-grid" id="monthlyDividend"></div>
             </div>
         </div>
-    </div><!-- /#dashboard -->
+    </div>
 
     <div id="noData" class="no-data animate-in">
         <div class="no-data-icon">📊</div>
         <h3>まだデータがありません</h3>
         <p>楽天証券からダウンロードしたCSVファイルをアップロードしてください</p>
-        <p style="margin-top:10px;font-size:14px">複数のファイルを同時選択可能です</p>
+        <p style="margin-top:10px;font-size:14px">一度アップロードすると次回から自動で読み込まれます 💾</p>
     </div>
 
     <!-- Industry modal -->
@@ -727,14 +688,14 @@
 
     <!-- Stock detail modal -->
     <div id="stockDetailModal" class="modal">
-        <div class="modal-content" id="stockDetailContent">
-            <!-- dynamically filled -->
-        </div>
+        <div class="modal-content" id="stockDetailContent"></div>
     </div>
-</div><!-- /.container -->
+</div>
 
 <script>
-// ── Data stores ──
+// ══════════════════════════════════════════════
+//  DATA STORES
+// ══════════════════════════════════════════════
 let domesticStocksData = [];
 let foreignStocksData  = [];
 let fundsData          = [];
@@ -742,261 +703,392 @@ let allStocksData      = [];
 let fearGreedIndex     = null;
 
 const TAX_RATE = 0.20315;
+const LS_KEY   = 'portfolio_data_v2';
 
-// ── Industry / Dividend DB ──
+// ══════════════════════════════════════════════
+//  LOCAL STORAGE — SAVE & LOAD
+// ══════════════════════════════════════════════
+function saveToLocalStorage() {
+    try {
+        const payload = {
+            savedAt: new Date().toISOString(),
+            domestic: domesticStocksData,
+            foreign:  foreignStocksData,
+            funds:    fundsData
+        };
+        const json = JSON.stringify(payload);
+        // 5MB上限チェック（概算）
+        if (json.length > 4 * 1024 * 1024) {
+            console.warn('データが大きすぎてLocalStorageに保存できません');
+            return false;
+        }
+        localStorage.setItem(LS_KEY, json);
+        return true;
+    } catch(e) {
+        console.warn('LocalStorage保存エラー:', e);
+        return false;
+    }
+}
+
+function loadFromLocalStorage() {
+    try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return false;
+        const payload = JSON.parse(raw);
+        if (!payload || !payload.savedAt) return false;
+
+        domesticStocksData = payload.domestic || [];
+        foreignStocksData  = payload.foreign  || [];
+        fundsData          = payload.funds     || [];
+        allStocksData      = [...domesticStocksData, ...foreignStocksData];
+
+        // バナー表示
+        const banner = document.getElementById('savedDataBanner');
+        const dateEl = document.getElementById('savedDataDate');
+        if (banner) banner.classList.add('visible');
+        if (dateEl) {
+            const d = new Date(payload.savedAt);
+            dateEl.textContent = `保存日時: ${d.toLocaleString('ja-JP')}`;
+        }
+        return true;
+    } catch(e) {
+        console.warn('LocalStorage読み込みエラー:', e);
+        return false;
+    }
+}
+
+function clearSavedData() {
+    if (!confirm('保存されたポートフォリオデータを消去しますか？\nページをリロードすると空の状態になります。')) return;
+    localStorage.removeItem(LS_KEY);
+    domesticStocksData = [];
+    foreignStocksData  = [];
+    fundsData          = [];
+    allStocksData      = [];
+    document.getElementById('savedDataBanner').classList.remove('visible');
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('noData').style.display    = 'block';
+    document.getElementById('uploadStatus').innerHTML   = '';
+}
+
+// ══════════════════════════════════════════════
+//  INDUSTRY / DIVIDEND DB
+// ══════════════════════════════════════════════
 const industryDatabase = {
-    '1343': {name:'不動産ETF',  dps:87,   months:[2,5,8,11]},
-    '1489': {name:'高配当ETF',  dps:130,  months:[1,4,7,10]},
-    '1414': {name:'建設',       dps:58,   months:[3,9]},
-    '1928': {name:'建設',       dps:144,  months:[1,7]},
-    '1951': {name:'建設',       dps:90,   months:[3,9]},
-    '3003': {name:'不動産',     dps:42,   months:[12]},
-    '3231': {name:'不動産',     dps:90,   months:[3,9]},
-    '2003': {name:'食品',       dps:280,  months:[3,9]},
-    '2269': {name:'食品',       dps:90,   months:[3,9]},
-    '2502': {name:'食品',       dps:100,  months:[12]},
-    '2124': {name:'サービス',   dps:60,   months:[12]},
-    '2185': {name:'IT',         dps:60,   months:[3,9]},
-    '2391': {name:'サービス',   dps:48,   months:[3,9]},
-    '2462': {name:'サービス',   dps:48,   months:[3,9]},
-    '2659': {name:'小売',       dps:50,   months:[2,8]},
-    '2317': {name:'IT',         dps:14,   months:[3]},
-    '2169': {name:'IT',         dps:72,   months:[3,9]},
-    '3053': {name:'外食',       dps:0,    months:[]},
-    '3076': {name:'サービス',   dps:80,   months:[3,9]},
-    '3333': {name:'小売',       dps:30,   months:[2,8]},
-    '3771': {name:'IT',         dps:80,   months:[3]},
-    '3817': {name:'IT',         dps:170,  months:[3,9]},
-    '3834': {name:'IT',         dps:26,   months:[3]},
-    '3901': {name:'IT',         dps:30,   months:[3,9]},
-    '4008': {name:'化学',       dps:220,  months:[3,9]},
-    '4042': {name:'化学',       dps:60,   months:[3,9]},
-    '4097': {name:'化学',       dps:40,   months:[3]},
-    '4248': {name:'製造',       dps:28,   months:[3]},
-    '4345': {name:'IT',         dps:45,   months:[3]},
-    '4401': {name:'化学',       dps:100,  months:[3,9]},
-    '4540': {name:'医薬品',     dps:60,   months:[3,9]},
-    '4661': {name:'エンタメ',   dps:19,   months:[3,9]},
-    '4719': {name:'IT',         dps:110,  months:[3]},
-    '4752': {name:'IT',         dps:50,   months:[3]},
-    '4832': {name:'IT',         dps:110,  months:[3]},
-    '4972': {name:'化学',       dps:75,   months:[3]},
-    '5388': {name:'化学',       dps:50,   months:[3]},
-    '6073': {name:'サービス',   dps:52,   months:[3,9]},
-    '6345': {name:'機械',       dps:46,   months:[3]},
-    '6432': {name:'機械',       dps:200,  months:[3]},
-    '6458': {name:'機械',       dps:50,   months:[3]},
-    '6539': {name:'サービス',   dps:26,   months:[3,9]},
-    '6652': {name:'機械',       dps:90,   months:[3]},
-    '6785': {name:'機械',       dps:95,   months:[3]},
-    '7723': {name:'機械',       dps:135,  months:[3]},
-    '7749': {name:'医療',       dps:55,   months:[3,9]},
-    '7820': {name:'製造',       dps:24,   months:[3]},
-    '7860': {name:'エンタメ',   dps:24,   months:[3,9]},
-    '7989': {name:'製造',       dps:85,   months:[12]},
-    '7994': {name:'製造',       dps:60,   months:[3]},
-    '8058': {name:'商社',       dps:200,  months:[3,9]},
-    '8130': {name:'内装',       dps:130,  months:[3,9]},
-    '8136': {name:'小売',       dps:0,    months:[]},
-    '8309': {name:'金融',       dps:240,  months:[3,9]},
-    '8584': {name:'金融',       dps:180,  months:[3,9]},
-    '8593': {name:'金融',       dps:40,   months:[3,9]},
-    '8725': {name:'保険',       dps:160,  months:[3,9]},
-    '9057': {name:'物流',       dps:110,  months:[3,9]},
-    '9303': {name:'倉庫',       dps:130,  months:[3,9]},
-    '9304': {name:'倉庫',       dps:40,   months:[3,9]},
-    '9364': {name:'倉庫',       dps:165,  months:[3,9]},
-    '9381': {name:'物流',       dps:70,   months:[3,9]},
-    '9513': {name:'電力',       dps:105,  months:[3,9]},
-    '9687': {name:'IT',         dps:163,  months:[3]},
-    '9757': {name:'サービス',   dps:60,   months:[3,9]},
-    '9769': {name:'サービス',   dps:90,   months:[3,9]},
-    '9960': {name:'商社',       dps:120,  months:[3,9]},
-    '9986': {name:'サービス',   dps:100,  months:[3,9]},
+    '1343': {name:'不動産ETF',dps:87,months:[2,5,8,11]},
+    '1489': {name:'高配当ETF',dps:130,months:[1,4,7,10]},
+    '1414': {name:'建設',dps:58,months:[3,9]},
+    '1928': {name:'建設',dps:144,months:[1,7]},
+    '1951': {name:'建設',dps:90,months:[3,9]},
+    '3003': {name:'不動産',dps:42,months:[12]},
+    '3231': {name:'不動産',dps:90,months:[3,9]},
+    '2003': {name:'食品',dps:280,months:[3,9]},
+    '2269': {name:'食品',dps:90,months:[3,9]},
+    '2502': {name:'食品',dps:100,months:[12]},
+    '2124': {name:'サービス',dps:60,months:[12]},
+    '2185': {name:'IT',dps:60,months:[3,9]},
+    '2391': {name:'サービス',dps:48,months:[3,9]},
+    '2462': {name:'サービス',dps:48,months:[3,9]},
+    '2659': {name:'小売',dps:50,months:[2,8]},
+    '2317': {name:'IT',dps:14,months:[3]},
+    '2169': {name:'IT',dps:72,months:[3,9]},
+    '3053': {name:'外食',dps:0,months:[]},
+    '3076': {name:'サービス',dps:80,months:[3,9]},
+    '3333': {name:'小売',dps:30,months:[2,8]},
+    '3771': {name:'IT',dps:80,months:[3]},
+    '3817': {name:'IT',dps:170,months:[3,9]},
+    '3834': {name:'IT',dps:26,months:[3]},
+    '3901': {name:'IT',dps:30,months:[3,9]},
+    '4008': {name:'化学',dps:220,months:[3,9]},
+    '4042': {name:'化学',dps:60,months:[3,9]},
+    '4097': {name:'化学',dps:40,months:[3]},
+    '4248': {name:'製造',dps:28,months:[3]},
+    '4345': {name:'IT',dps:45,months:[3]},
+    '4401': {name:'化学',dps:100,months:[3,9]},
+    '4540': {name:'医薬品',dps:60,months:[3,9]},
+    '4661': {name:'エンタメ',dps:19,months:[3,9]},
+    '4719': {name:'IT',dps:110,months:[3]},
+    '4752': {name:'IT',dps:50,months:[3]},
+    '4832': {name:'IT',dps:110,months:[3]},
+    '4972': {name:'化学',dps:75,months:[3]},
+    '5388': {name:'化学',dps:50,months:[3]},
+    '6073': {name:'サービス',dps:52,months:[3,9]},
+    '6345': {name:'機械',dps:46,months:[3]},
+    '6432': {name:'機械',dps:200,months:[3]},
+    '6458': {name:'機械',dps:50,months:[3]},
+    '6539': {name:'サービス',dps:26,months:[3,9]},
+    '6652': {name:'機械',dps:90,months:[3]},
+    '6785': {name:'機械',dps:95,months:[3]},
+    '7723': {name:'機械',dps:135,months:[3]},
+    '7749': {name:'医療',dps:55,months:[3,9]},
+    '7820': {name:'製造',dps:24,months:[3]},
+    '7860': {name:'エンタメ',dps:24,months:[3,9]},
+    '7989': {name:'製造',dps:85,months:[12]},
+    '7994': {name:'製造',dps:60,months:[3]},
+    '8058': {name:'商社',dps:200,months:[3,9]},
+    '8130': {name:'内装',dps:130,months:[3,9]},
+    '8136': {name:'小売',dps:0,months:[]},
+    '8309': {name:'金融',dps:240,months:[3,9]},
+    '8584': {name:'金融',dps:180,months:[3,9]},
+    '8593': {name:'金融',dps:40,months:[3,9]},
+    '8725': {name:'保険',dps:160,months:[3,9]},
+    '9057': {name:'物流',dps:110,months:[3,9]},
+    '9303': {name:'倉庫',dps:130,months:[3,9]},
+    '9304': {name:'倉庫',dps:40,months:[3,9]},
+    '9364': {name:'倉庫',dps:165,months:[3,9]},
+    '9381': {name:'物流',dps:70,months:[3,9]},
+    '9513': {name:'電力',dps:105,months:[3,9]},
+    '9687': {name:'IT',dps:163,months:[3]},
+    '9757': {name:'サービス',dps:60,months:[3,9]},
+    '9769': {name:'サービス',dps:90,months:[3,9]},
+    '9960': {name:'商社',dps:120,months:[3,9]},
+    '9986': {name:'サービス',dps:100,months:[3,9]},
 };
 
 // ── Chart instances ──
-let assetTypeChart = null, industryChart = null, domesticPerformanceChart = null, foreignPerformanceChart = null;
+let assetTypeChart=null, industryChart=null, domesticPerformanceChart=null, foreignPerformanceChart=null;
 
-// ── Fear & Greed ──
+// ══════════════════════════════════════════════
+//  FEAR & GREED — fetch with cache-bust
+// ══════════════════════════════════════════════
 async function fetchFearGreedIndex() {
+    const btn = document.getElementById('fgiRefreshBtn');
+    const icon = document.getElementById('fgiRefreshIcon');
+    if (btn) { btn.disabled = true; if(icon) icon.innerHTML = '<span class="spin">⏳</span>'; }
+
+    const cacheBust = `?t=${Date.now()}`;
+
     try {
-        const response = await fetch('https://production.dataviz.cnn.io/index/fearandgreed/graphdata',
-            {headers:{'User-Agent':'Mozilla/5.0'}});
+        // CNN公式API（cache-bust付き）
+        const response = await fetch(
+            'https://production.dataviz.cnn.io/index/fearandgreed/graphdata' + cacheBust,
+            { cache: 'no-store', headers: { 'Accept': 'application/json' } }
+        );
+        if (!response.ok) throw new Error('CNN API error');
         const data = await response.json();
         const fg = data.fear_and_greed;
         const value = Math.round(fg.score);
         fearGreedIndex = value;
-
-        const angle = (value/100)*180 - 90;
-        const needle = document.getElementById('gaugeNeedle');
-        if(needle) needle.setAttribute('transform',`rotate(${angle},150,150)`);
-
-        let color, statusText, activeArc;
-        if(value < 25){color='#e05c5c';statusText='EXTREME FEAR';activeArc='arc0';}
-        else if(value < 45){color='#f0a050';statusText='FEAR';activeArc='arc1';}
-        else if(value < 55){color='#d4c44a';statusText='NEUTRAL';activeArc='arc2';}
-        else if(value < 75){color='#8bc44a';statusText='GREED';activeArc='arc3';}
-        else{color='#4aaa6a';statusText='EXTREME GREED';activeArc='arc4';}
-
-        ['arc0','arc1','arc2','arc3','arc4'].forEach(id=>{
-            const el=document.getElementById(id);
-            if(el) el.setAttribute('opacity',id===activeArc?'1':'0.2');
-        });
-        document.getElementById('fearGreedValue').textContent = value;
-        document.getElementById('fearGreedValue').style.color = color;
-        document.getElementById('fearGreedStatus').textContent = statusText;
-        document.getElementById('fearGreedStatus').style.color = color;
-
-        const indicators = [
-            {key:'market_momentum_sp500',  label:'📈 S&P500モメンタム', desc:'S&P500の125日移動平均との乖離'},
-            {key:'stock_price_strength',   label:'💪 株価強度',         desc:'NYSE 52週高値/安値の比率'},
-            {key:'stock_price_breadth',    label:'📊 株価幅',           desc:'値上がり/値下がり出来高の比率'},
-            {key:'put_call_options',       label:'⚖️ プット/コール比率', desc:'売りと買いオプションの比率'},
-            {key:'market_volatility_vix',  label:'🌊 VIX（恐怖指数）',  desc:'VIXと50日移動平均の乖離'},
-            {key:'junk_bond_demand',       label:'🔗 ジャンク債需要',    desc:'高リスク債と投資適格債の利回り差'},
-            {key:'safe_haven_demand',      label:'🏦 安全資産需要',      desc:'株式と国債のリターン差'},
-        ];
-        const container = document.getElementById('fgiIndicators');
-        if(container){
-            container.innerHTML = indicators.map(ind=>{
-                const item = data[ind.key];
-                if(!item) return '';
-                const s = Math.round(item.score);
-                let iColor,iLabel;
-                if(s<25){iColor='#e05c5c';iLabel='極度の恐怖';}
-                else if(s<45){iColor='#f0a050';iLabel='恐怖';}
-                else if(s<55){iColor='#6b7280';iLabel='中立';}
-                else if(s<75){iColor='#8bc44a';iLabel='強欲';}
-                else{iColor='#4aaa6a';iLabel='極度の強欲';}
-                return `<div class="fgi-indicator-row">
-                    <div class="fgi-ind-header">
-                        <span class="fgi-ind-label">${ind.label}</span>
-                        <span class="fgi-ind-score" style="color:${iColor}">${s} <small style="font-size:11px">${iLabel}</small></span>
-                    </div>
-                    <div class="fgi-bar-bg"><div class="fgi-bar-fill" style="width:${Math.max(2,s)}%;background:${iColor}"></div></div>
-                    <div class="fgi-ind-desc">${ind.desc}</div>
-                </div>`;
-            }).join('');
-        }
-        const prevEl = document.getElementById('fgiComparison');
-        if(prevEl && fg.previous_close){
-            const prev = Math.round(fg.previous_close);
-            const diff = value - prev;
-            prevEl.innerHTML = `前日 <strong>${prev}</strong> → 本日 <strong style="color:${color}">${value}</strong>
-                <span style="color:${diff>=0?'#005D4D':'#ef4444'};font-weight:700">${diff>=0?'▲':'▼'}${Math.abs(diff)}</span>`;
-        }
+        renderFearGreed(value, data);
+        setFgiTimestamp();
+        updateMarketAnalysisIfLoaded();
     } catch(error) {
+        // フォールバック: Alternative.me (暗号通貨向けだが参考値として)
         try {
-            const r2 = await fetch('https://api.alternative.me/fng/?limit=1');
+            const r2 = await fetch('https://api.alternative.me/fng/?limit=1' + cacheBust, { cache: 'no-store' });
             const d2 = await r2.json();
             const v2 = parseInt(d2.data[0].value);
             fearGreedIndex = v2;
-            document.getElementById('fearGreedValue').textContent = v2;
-            document.getElementById('fearGreedStatus').textContent = d2.data[0].value_classification.toUpperCase();
-            const angle2 = (v2/100)*180 - 90;
-            const needle2 = document.getElementById('gaugeNeedle');
-            if(needle2) needle2.setAttribute('transform',`rotate(${angle2},150,150)`);
-        } catch(e){
-            document.getElementById('fearGreedValue').textContent='--';
-            document.getElementById('fearGreedStatus').textContent='取得失敗';
+            renderFearGreedSimple(v2, d2.data[0].value_classification.toUpperCase());
+            setFgiTimestamp('※ Alternative.me（暗号通貨向け）からの取得');
+            updateMarketAnalysisIfLoaded();
+        } catch(e) {
+            document.getElementById('fearGreedValue').textContent = '--';
+            document.getElementById('fearGreedStatus').textContent = '取得失敗';
+            setFgiTimestamp('取得に失敗しました');
         }
+    } finally {
+        if (btn) { btn.disabled = false; if(icon) icon.textContent = '🔄'; }
     }
+}
+
+function renderFearGreed(value, data) {
+    const angle = (value / 100) * 180 - 90;
+    const needle = document.getElementById('gaugeNeedle');
+    if (needle) needle.setAttribute('transform', `rotate(${angle},150,150)`);
+
+    let color, statusText, activeArc;
+    if (value < 25)      { color='#e05c5c'; statusText='EXTREME FEAR'; activeArc='arc0'; }
+    else if (value < 45) { color='#f0a050'; statusText='FEAR';         activeArc='arc1'; }
+    else if (value < 55) { color='#d4c44a'; statusText='NEUTRAL';      activeArc='arc2'; }
+    else if (value < 75) { color='#8bc44a'; statusText='GREED';        activeArc='arc3'; }
+    else                 { color='#4aaa6a'; statusText='EXTREME GREED';activeArc='arc4'; }
+
+    ['arc0','arc1','arc2','arc3','arc4'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('opacity', id === activeArc ? '1' : '0.2');
+    });
+    document.getElementById('fearGreedValue').textContent  = value;
+    document.getElementById('fearGreedValue').style.color  = color;
+    document.getElementById('fearGreedStatus').textContent = statusText;
+    document.getElementById('fearGreedStatus').style.color = color;
+
+    // 指標一覧
+    const indicators = [
+        {key:'market_momentum_sp500', label:'📈 S&P500モメンタム', desc:'S&P500の125日移動平均との乖離'},
+        {key:'stock_price_strength',  label:'💪 株価強度',         desc:'NYSE 52週高値/安値の比率'},
+        {key:'stock_price_breadth',   label:'📊 株価幅',           desc:'値上がり/値下がり出来高の比率'},
+        {key:'put_call_options',      label:'⚖️ プット/コール比率', desc:'売りと買いオプションの比率'},
+        {key:'market_volatility_vix', label:'🌊 VIX（恐怖指数）',  desc:'VIXと50日移動平均の乖離'},
+        {key:'junk_bond_demand',      label:'🔗 ジャンク債需要',    desc:'高リスク債と投資適格債の利回り差'},
+        {key:'safe_haven_demand',     label:'🏦 安全資産需要',      desc:'株式と国債のリターン差'},
+    ];
+    const container = document.getElementById('fgiIndicators');
+    if (container) {
+        container.innerHTML = indicators.map(ind => {
+            const item = data[ind.key];
+            if (!item) return '';
+            const s = Math.round(item.score);
+            let iColor, iLabel;
+            if (s < 25)      { iColor='#e05c5c'; iLabel='極度の恐怖'; }
+            else if (s < 45) { iColor='#f0a050'; iLabel='恐怖'; }
+            else if (s < 55) { iColor='#6b7280'; iLabel='中立'; }
+            else if (s < 75) { iColor='#8bc44a'; iLabel='強欲'; }
+            else             { iColor='#4aaa6a'; iLabel='極度の強欲'; }
+            return `<div class="fgi-indicator-row">
+                <div class="fgi-ind-header">
+                    <span class="fgi-ind-label">${ind.label}</span>
+                    <span class="fgi-ind-score" style="color:${iColor}">${s} <small style="font-size:11px">${iLabel}</small></span>
+                </div>
+                <div class="fgi-bar-bg"><div class="fgi-bar-fill" style="width:${Math.max(2,s)}%;background:${iColor}"></div></div>
+                <div class="fgi-ind-desc">${ind.desc}</div>
+            </div>`;
+        }).join('');
+    }
+    const prevEl = document.getElementById('fgiComparison');
+    const fg = data.fear_and_greed;
+    if (prevEl && fg.previous_close) {
+        const prev = Math.round(fg.previous_close);
+        const diff = value - prev;
+        prevEl.innerHTML = `前日 <strong>${prev}</strong> → 本日 <strong style="color:${color}">${value}</strong>
+            <span style="color:${diff >= 0 ? '#005D4D' : '#ef4444'};font-weight:700">${diff >= 0 ? '▲' : '▼'}${Math.abs(diff)}</span>`;
+    }
+}
+
+function renderFearGreedSimple(value, statusText) {
+    let color;
+    if (value < 25)      color = '#e05c5c';
+    else if (value < 45) color = '#f0a050';
+    else if (value < 55) color = '#d4c44a';
+    else if (value < 75) color = '#8bc44a';
+    else                 color = '#4aaa6a';
+
+    const angle = (value / 100) * 180 - 90;
+    const needle = document.getElementById('gaugeNeedle');
+    if (needle) needle.setAttribute('transform', `rotate(${angle},150,150)`);
+    document.getElementById('fearGreedValue').textContent  = value;
+    document.getElementById('fearGreedValue').style.color  = color;
+    document.getElementById('fearGreedStatus').textContent = statusText;
+    document.getElementById('fearGreedStatus').style.color = color;
+}
+
+function setFgiTimestamp(note) {
+    const el = document.getElementById('fgiLastUpdated');
+    if (!el) return;
+    const now = new Date().toLocaleTimeString('ja-JP');
+    el.textContent = note ? `更新: ${now} （${note}）` : `更新: ${now}`;
+}
+
+function refreshFearGreed() {
+    fetchFearGreedIndex();
+}
+
+// 市場分析をデータ読込後に再描画
+function updateMarketAnalysisIfLoaded() {
+    if (domesticStocksData.length + foreignStocksData.length + fundsData.length === 0) return;
+    const domVal   = domesticStocksData.reduce((s,x) => s + x.marketValue, 0);
+    const domCost  = domesticStocksData.reduce((s,x) => s + (x.avgPrice * x.quantity), 0);
+    const forVal   = foreignStocksData.reduce((s,x) => s + x.marketValue, 0);
+    const forCost  = foreignStocksData.reduce((s,x) => s + (x.avgPrice * x.quantity), 0);
+    const funVal   = fundsData.reduce((s,f) => s + f.marketValue, 0);
+    const funCost  = fundsData.reduce((s,f) => s + (f.acquiredTotal || 0), 0);
+    const totalPL  = (domVal + forVal + funVal) - (domCost + forCost + funCost);
+    const totalCost= domCost + forCost + funCost;
+    const profitRate = totalCost > 0 ? (totalPL / totalCost) * 100 : 0;
+    document.getElementById('marketAnalysisContent').innerHTML = generateMarketAnalysis(profitRate, fearGreedIndex);
 }
 
 // ── Action advice ──
 function generateActionAdvice(stock) {
     const {priceChange, profitRate, currentPrice, avgPrice} = stock;
-    let action='', reason='';
-    if(fearGreedIndex && fearGreedIndex>60 && priceChange<=-15){
-        action=`買い増し 100株`;
-        reason=`市場が<span class="reason-highlight">強欲（${fearGreedIndex}）</span>な中で<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%下落</span>。絶好の買い場。指値 <span class="reason-highlight">¥${Math.round(currentPrice*.98).toLocaleString()}</span> で待機推奨`;
-    } else if(fearGreedIndex && fearGreedIndex<40 && priceChange<=-15){
-        action=`買い増し 100株`;
-        reason=`市場が<span class="reason-highlight">恐怖（${fearGreedIndex}）</span>で<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%下落</span>。指値 <span class="reason-highlight">¥${Math.round(currentPrice*.95).toLocaleString()}</span> でさらなる下落に備える`;
-    } else if(priceChange<=-10 && priceChange>-15){
-        action=`買い増し 100株`;
-        reason=`<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%調整</span>で押し目形成。指値 <span class="reason-highlight">¥${Math.round(currentPrice*.97).toLocaleString()}</span> で押し目買いのチャンス`;
-    } else if(priceChange<=-7 && priceChange>-10){
-        action=`-`;
-        reason=`<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%下落</span>。指値 <span class="reason-highlight">¥${Math.round(currentPrice*.96).toLocaleString()}</span> で下値を拾う準備も検討`;
-    } else if(profitRate>50){
-        action=`売却 100株`;
-        reason=`<span class="reason-highlight">+${profitRate.toFixed(1)}%の大幅利益</span>。部分利確で利益を確定。指値 <span class="reason-highlight">¥${Math.round(currentPrice*1.02).toLocaleString()}</span>`;
-    } else if(profitRate>30){
-        action=`-`;
-        reason=`<span class="reason-highlight">+${profitRate.toFixed(1)}%</span>と好調。まだ上昇余地あり。現在価格 <span class="reason-highlight">¥${currentPrice.toLocaleString()}</span> から-10%で買い増し検討`;
-    } else if(profitRate>10){
-        action=`-`;
-        reason=`<span class="reason-highlight">+${profitRate.toFixed(1)}%</span>。順調に推移中。取得単価 <span class="reason-highlight">¥${avgPrice.toLocaleString()}</span> からさらに+20%まで保持継続`;
-    } else if(profitRate>0){
-        action=`-`;
-        reason=`<span class="reason-highlight">+${profitRate.toFixed(1)}%</span>の含み益。市場全体の動向を見ながら長期保有継続`;
-    } else if(profitRate>=-7){
-        action=`-`;
-        reason=`<span class="reason-highlight">${profitRate.toFixed(1)}%の含み損</span>。誤差の範囲内。<span class="reason-highlight">-10%</span>で買い増し検討`;
-    } else if(profitRate>-15){
-        action=`-`;
-        reason=`<span class="reason-highlight">${profitRate.toFixed(1)}%の含み損</span>。ナンピン候補だが、まだ待ち。<span class="reason-highlight">-15%以降</span>が目安`;
+    let action = '', reason = '';
+    if (fearGreedIndex && fearGreedIndex > 60 && priceChange <= -15) {
+        action = '買い増し 100株';
+        reason = `市場が<span class="reason-highlight">強欲（${fearGreedIndex}）</span>な中で<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%下落</span>。絶好の買い場。指値 <span class="reason-highlight">¥${Math.round(currentPrice*.98).toLocaleString()}</span> で待機推奨`;
+    } else if (fearGreedIndex && fearGreedIndex < 40 && priceChange <= -15) {
+        action = '買い増し 100株';
+        reason = `市場が<span class="reason-highlight">恐怖（${fearGreedIndex}）</span>で<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%下落</span>。指値 <span class="reason-highlight">¥${Math.round(currentPrice*.95).toLocaleString()}</span> でさらなる下落に備える`;
+    } else if (priceChange <= -10 && priceChange > -15) {
+        action = '買い増し 100株';
+        reason = `<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%調整</span>で押し目形成。指値 <span class="reason-highlight">¥${Math.round(currentPrice*.97).toLocaleString()}</span> で押し目買いのチャンス`;
+    } else if (priceChange <= -7 && priceChange > -10) {
+        action = '-';
+        reason = `<span class="reason-highlight">${Math.abs(priceChange).toFixed(1)}%下落</span>。指値 <span class="reason-highlight">¥${Math.round(currentPrice*.96).toLocaleString()}</span> で下値を拾う準備も検討`;
+    } else if (profitRate > 50) {
+        action = '売却 100株';
+        reason = `<span class="reason-highlight">+${profitRate.toFixed(1)}%の大幅利益</span>。部分利確で利益を確定。指値 <span class="reason-highlight">¥${Math.round(currentPrice*1.02).toLocaleString()}</span>`;
+    } else if (profitRate > 30) {
+        action = '-';
+        reason = `<span class="reason-highlight">+${profitRate.toFixed(1)}%</span>と好調。まだ上昇余地あり。現在価格 <span class="reason-highlight">¥${currentPrice.toLocaleString()}</span> から-10%で買い増し検討`;
+    } else if (profitRate > 10) {
+        action = '-';
+        reason = `<span class="reason-highlight">+${profitRate.toFixed(1)}%</span>。順調に推移中。取得単価 <span class="reason-highlight">¥${avgPrice.toLocaleString()}</span> からさらに+20%まで保持継続`;
+    } else if (profitRate > 0) {
+        action = '-';
+        reason = `<span class="reason-highlight">+${profitRate.toFixed(1)}%</span>の含み益。市場全体の動向を見ながら長期保有継続`;
+    } else if (profitRate >= -7) {
+        action = '-';
+        reason = `<span class="reason-highlight">${profitRate.toFixed(1)}%の含み損</span>。誤差の範囲内。<span class="reason-highlight">-10%</span>で買い増し検討`;
+    } else if (profitRate > -15) {
+        action = '-';
+        reason = `<span class="reason-highlight">${profitRate.toFixed(1)}%の含み損</span>。ナンピン候補だが、まだ待ち。<span class="reason-highlight">-15%以降</span>が目安`;
     } else {
-        action=`-`;
-        reason=`<span class="reason-highlight">${profitRate.toFixed(1)}%の大幅含み損</span>。指値 <span class="reason-highlight">¥${Math.round(currentPrice*.97).toLocaleString()}</span> で100株買い増しを検討`;
+        action = '-';
+        reason = `<span class="reason-highlight">${profitRate.toFixed(1)}%の大幅含み損</span>。指値 <span class="reason-highlight">¥${Math.round(currentPrice*.97).toLocaleString()}</span> で100株買い増しを検討`;
     }
     return {action, reason};
 }
 
 // ── Portfolio score ──
 function calculatePortfolioScore(dom, for_, funds, profitRate) {
-    let score=50, comments=[];
-    if(profitRate>30){score+=30;comments.push('優秀なリターン');}
-    else if(profitRate>20){score+=25;comments.push('良好なリターン');}
-    else if(profitRate>10){score+=20;comments.push('堅実なリターン');}
-    else if(profitRate>5){score+=15;comments.push('安定運用');}
-    else if(profitRate>0){score+=10;comments.push('プラス維持');}
-    else if(profitRate>-5){score+=5;comments.push('軽微な損失');}
-    const totalStocks = dom.length+for_.length;
-    if(totalStocks>=30){score+=20;comments.push('十分に分散');}
-    else if(totalStocks>=20){score+=15;comments.push('適度に分散');}
-    else if(totalStocks>=10){score+=10;comments.push('やや集中');}
-    else score+=5;
-    const industries={};
-    dom.forEach(s=>{industries[s.industry]=(industries[s.industry]||0)+1;});
-    const ic=Object.keys(industries).length;
-    if(ic>=8)score+=15; else if(ic>=5)score+=10; else score+=5;
-    if(for_.length>0 && funds.length>0){score+=10;comments.push('国際分散OK');}
-    else if(for_.length>0 || funds.length>0) score+=5;
-    score=Math.min(100,Math.max(0,score));
-    let grade='';
-    if(score>=90)grade='S'; else if(score>=80)grade='A'; else if(score>=70)grade='B'; else if(score>=60)grade='C'; else grade='D';
+    let score = 50, comments = [];
+    if (profitRate > 30)     { score += 30; comments.push('優秀なリターン'); }
+    else if (profitRate > 20){ score += 25; comments.push('良好なリターン'); }
+    else if (profitRate > 10){ score += 20; comments.push('堅実なリターン'); }
+    else if (profitRate > 5) { score += 15; comments.push('安定運用'); }
+    else if (profitRate > 0) { score += 10; comments.push('プラス維持'); }
+    else if (profitRate > -5){ score += 5;  comments.push('軽微な損失'); }
+    const totalStocks = dom.length + for_.length;
+    if (totalStocks >= 30)     { score += 20; comments.push('十分に分散'); }
+    else if (totalStocks >= 20){ score += 15; comments.push('適度に分散'); }
+    else if (totalStocks >= 10){ score += 10; comments.push('やや集中'); }
+    else                         score += 5;
+    const industries = {};
+    dom.forEach(s => { industries[s.industry] = (industries[s.industry] || 0) + 1; });
+    const ic = Object.keys(industries).length;
+    if (ic >= 8) score += 15; else if (ic >= 5) score += 10; else score += 5;
+    if (for_.length > 0 && funds.length > 0) { score += 10; comments.push('国際分散OK'); }
+    else if (for_.length > 0 || funds.length > 0) score += 5;
+    score = Math.min(100, Math.max(0, score));
+    let grade = score >= 90 ? 'S' : score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : 'D';
     return {score, grade, comments};
 }
 
 // ── Market analysis ──
 function generateMarketAnalysis(profitRate, fearGreed) {
-    const today=new Date(); const month=today.getMonth()+1; const year=today.getFullYear();
-    let ms='', strategy=[];
-    if(fearGreed>=75){
-        ms=`市場は<span class="analysis-highlight">極度の強欲（${fearGreed}）</span>状態。投資家が楽観的すぎる可能性があり、調整局面に入るリスクが高まっています。`;
-        strategy=['利益確定を検討：+50%以上の銘柄は部分売却も視野に','新規購入は慎重に：高値掴みのリスクあり','現金比率を上げる：次の調整局面に備える'];
-    } else if(fearGreed>=55){
-        ms=`市場は<span class="analysis-highlight">強欲（${fearGreed}）</span>傾向。上昇トレンド継続中ですが、過熱感には注意が必要です。`;
-        strategy=['保有継続が基本：トレンドに乗る','押し目待ち：-10%の調整で買い増し','一部利確：+40%超えは検討余地あり'];
-    } else if(fearGreed>=45){
-        ms=`市場は<span class="analysis-highlight">中立（${fearGreed}）</span>。方向感が定まっていない状態です。`;
-        strategy=['様子見が賢明：大きな動きを待つ','分散投資を継続：リスク管理を徹底','ウォッチリスト作成：買い場を探す'];
-    } else if(fearGreed>=25){
-        ms=`市場は<span class="analysis-highlight">恐怖（${fearGreed}）</span>状態。売りが売りを呼ぶ展開ですが、優良株の買い場となる可能性も。`;
-        strategy=['優良株の押し目買い：-15%以上の調整は好機','ナンピン検討：保有株の平均取得単価を下げる','現金温存：さらなる下落に備える余力も残す'];
-    } else if(fearGreed !== null) {
-        ms=`市場は<span class="analysis-highlight">極度の恐怖（${fearGreed}）</span>。パニック売りの様相ですが、長期投資家には絶好の買い場となる可能性があります。`;
-        strategy=['積極的な買い増し：優良株を拾う絶好機','分割購入を推奨：一度に全額投入せず、3-4回に分けて','長期目線で保持：短期の値動きに惑わされない'];
+    const today = new Date(); const month = today.getMonth() + 1; const year = today.getFullYear();
+    let ms = '', strategy = [];
+    if (fearGreed >= 75) {
+        ms = `市場は<span class="analysis-highlight">極度の強欲（${fearGreed}）</span>状態。投資家が楽観的すぎる可能性があり、調整局面に入るリスクが高まっています。`;
+        strategy = ['利益確定を検討：+50%以上の銘柄は部分売却も視野に','新規購入は慎重に：高値掴みのリスクあり','現金比率を上げる：次の調整局面に備える'];
+    } else if (fearGreed >= 55) {
+        ms = `市場は<span class="analysis-highlight">強欲（${fearGreed}）</span>傾向。上昇トレンド継続中ですが、過熱感には注意が必要です。`;
+        strategy = ['保有継続が基本：トレンドに乗る','押し目待ち：-10%の調整で買い増し','一部利確：+40%超えは検討余地あり'];
+    } else if (fearGreed >= 45) {
+        ms = `市場は<span class="analysis-highlight">中立（${fearGreed}）</span>。方向感が定まっていない状態です。`;
+        strategy = ['様子見が賢明：大きな動きを待つ','分散投資を継続：リスク管理を徹底','ウォッチリスト作成：買い場を探す'];
+    } else if (fearGreed >= 25) {
+        ms = `市場は<span class="analysis-highlight">恐怖（${fearGreed}）</span>状態。売りが売りを呼ぶ展開ですが、優良株の買い場となる可能性も。`;
+        strategy = ['優良株の押し目買い：-15%以上の調整は好機','ナンピン検討：保有株の平均取得単価を下げる','現金温存：さらなる下落に備える余力も残す'];
+    } else if (fearGreed !== null) {
+        ms = `市場は<span class="analysis-highlight">極度の恐怖（${fearGreed}）</span>。パニック売りの様相ですが、長期投資家には絶好の買い場となる可能性があります。`;
+        strategy = ['積極的な買い増し：優良株を拾う絶好機','分割購入を推奨：一度に全額投入せず、3-4回に分けて','長期目線で保持：短期の値動きに惑わされない'];
     } else {
-        ms=`市場感情指数を取得中です。`;
-        strategy=['データ取得後に戦略を更新します'];
+        ms = '市場感情指数を取得中です。';
+        strategy = ['データ取得後に戦略を更新します'];
     }
-    const pa = profitRate>20
+    const pa = profitRate > 20
         ? `あなたのポートフォリオは<span class="analysis-highlight">+${profitRate.toFixed(1)}%</span>と市場平均を上回る好成績。`
-        : profitRate>0
+        : profitRate > 0
         ? `ポートフォリオは<span class="analysis-highlight">+${profitRate.toFixed(1)}%</span>のプラス。着実な成長路線です。`
         : `現在<span class="analysis-highlight">${profitRate.toFixed(1)}%</span>の含み損ですが、長期投資なら一時的な調整。焦らず保有継続を。`;
     return `<div class="analysis-section"><h3>📊 ${year}年${month}月の市場状況</h3><p class="analysis-text">${ms}</p></div>
@@ -1006,195 +1098,196 @@ function generateMarketAnalysis(profitRate, fearGreed) {
 
 // ── Tab switch ──
 function switchTab(tabName, btn) {
-    document.querySelectorAll('.tab-button').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-    document.getElementById(tabName+'Tab').classList.add('active');
+    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.getElementById(tabName + 'Tab').classList.add('active');
 }
 
 // ── File input ──
-document.getElementById('csvFileInput').addEventListener('change', function(e){
-    Array.from(e.target.files).forEach(f=>parseCSV(f));
+document.getElementById('csvFileInput').addEventListener('change', function(e) {
+    Array.from(e.target.files).forEach(f => parseCSV(f));
 });
 
-function parseCSV(file){
+function parseCSV(file) {
     Papa.parse(file, {
-        encoding:'Shift_JIS',
-        complete: function(results){
-            const data=results.data;
-            if(!data.length) return;
-            const firstCell=(data[0][0]||'').trim();
-            if(firstCell==='投資信託種別') processFundData(data);
+        encoding: 'Shift_JIS',
+        complete: function(results) {
+            const data = results.data;
+            if (!data.length) return;
+            const firstCell = (data[0][0] || '').trim();
+            if (firstCell === '投資信託種別') processFundData(data);
             else processData(data);
         }
     });
 }
 
-function processFundData(data){
-    if(data.length<2) return;
-    for(let i=1;i<data.length;i++){
-        const row=data[i];
-        if(!row || row.length<15) continue;
-        if(row[0]!=='投資信託') continue;
-        if(!row[2] || row[2]==='') continue;
-        const accountType=(row[1]||'').trim();
-        const fundName=(row[2]||'').trim();
-        const quantity=parseFloat((row[4]||'0').replace(/,/g,''));
-        const avgPrice=parseFloat((row[7]||'0').replace(/,/g,''));
-        const acquiredTotal=parseFloat((row[8]||'0').replace(/,/g,''));
-        const basePrice=parseFloat((row[9]||'0').replace(/,/g,''));
-        const marketValue=parseFloat((row[12]||'0').replace(/,/g,''));
-        const profitLoss=parseFloat((row[13]||'0').replace(/,/g,''));
-        const profitRate=parseFloat((row[14]||'0').replace(/,/g,''));
-        if(isNaN(marketValue)||marketValue===0) continue;
-        let accountClass='account-tokutei',accountLabel='特定';
-        if(accountType.includes('NISAつみたて')||accountType.includes('つみたて投資枠')){accountClass='account-nisa-tsumitate';accountLabel='つみたてNISA';}
-        else if(accountType.includes('NISA成長')||accountType.includes('成長投資枠')){accountClass='account-nisa-growth';accountLabel='成長投資枠';}
-        else if(accountType.includes('iDeCo')||accountType.includes('イデコ')||accountType.includes('確定拠出')){accountClass='account-ideco';accountLabel='iDeCo';}
-        if(!fundsData.some(f=>f.fundName===fundName&&f.accountType===accountType)){
+function processFundData(data) {
+    if (data.length < 2) return;
+    for (let i = 1; i < data.length; i++) {
+        const row = data[i];
+        if (!row || row.length < 15) continue;
+        if (row[0] !== '投資信託') continue;
+        if (!row[2] || row[2] === '') continue;
+        const accountType  = (row[1] || '').trim();
+        const fundName     = (row[2] || '').trim();
+        const quantity     = parseFloat((row[4]  || '0').replace(/,/g,''));
+        const avgPrice     = parseFloat((row[7]  || '0').replace(/,/g,''));
+        const acquiredTotal= parseFloat((row[8]  || '0').replace(/,/g,''));
+        const basePrice    = parseFloat((row[9]  || '0').replace(/,/g,''));
+        const marketValue  = parseFloat((row[12] || '0').replace(/,/g,''));
+        const profitLoss   = parseFloat((row[13] || '0').replace(/,/g,''));
+        const profitRate   = parseFloat((row[14] || '0').replace(/,/g,''));
+        if (isNaN(marketValue) || marketValue === 0) continue;
+        let accountClass = 'account-tokutei', accountLabel = '特定';
+        if (accountType.includes('NISAつみたて') || accountType.includes('つみたて投資枠')) { accountClass='account-nisa-tsumitate'; accountLabel='つみたてNISA'; }
+        else if (accountType.includes('NISA成長') || accountType.includes('成長投資枠'))   { accountClass='account-nisa-growth';    accountLabel='成長投資枠'; }
+        else if (accountType.includes('iDeCo') || accountType.includes('イデコ') || accountType.includes('確定拠出')) { accountClass='account-ideco'; accountLabel='iDeCo'; }
+        if (!fundsData.some(f => f.fundName === fundName && f.accountType === accountType)) {
             fundsData.push({fundName,accountType,accountClass,accountLabel,quantity,avgPrice,acquiredTotal,basePrice,marketValue,profitLoss,profitRate});
         }
     }
+    saveToLocalStorage();
     updateDashboard();
 }
 
-function processData(data){
-    let startIndex=-1;
-    for(let i=0;i<data.length;i++){
-        if(data[i][0]==='種別'&&data[i][1]==='銘柄コード・ティッカー'){startIndex=i+1;break;}
+function processData(data) {
+    let startIndex = -1;
+    for (let i = 0; i < data.length; i++) {
+        if (data[i][0] === '種別' && data[i][1] === '銘柄コード・ティッカー') { startIndex = i + 1; break; }
     }
-    if(startIndex===-1) return;
-    for(let i=startIndex;i<data.length;i++){
-        const row=data[i];
-        if(!row||row.length<15) continue;
-        const type=(row[0]||'').trim();
-        if((type==='国内株式'||type==='米国株式')&&row[1]&&row[4]){
-            const code=row[1].trim(), name=row[2].trim();
-            const quantity=parseFloat((row[4]||'').replace(/,/g,''));
-            const avgPrice=parseFloat((row[6]||'').replace(/,/g,''));
-            const currentPrice=parseFloat((row[8]||'').replace(/,/g,''));
-            const marketValue=parseFloat((row[14]||'').replace(/,/g,''));
-            const profitLoss=parseFloat((row[16]||'').replace(/[+,]/g,''));
-            const profitRate=parseFloat((row[17]||'').replace(/[+,]/g,''));
-            if(!isNaN(quantity)&&!isNaN(currentPrice)&&!isNaN(marketValue)){
-                const info=industryDatabase[code]||{name:'その他',dps:0,months:[3,9]};
-                const estimatedDividend=(info.dps||0)*quantity;
-                const priceChange=avgPrice>0?((currentPrice-avgPrice)/avgPrice)*100:0;
-                let recommendation='HOLD';
-                if(priceChange<=-15)recommendation='STRONG_BUY';
-                else if(priceChange<=-10)recommendation='BUY';
-                const sd={code,name,quantity,avgPrice,currentPrice,marketValue,profitLoss,profitRate,estimatedDividend,recommendation,priceChange,industry:info.name,type};
-                if(type==='国内株式'){if(!domesticStocksData.some(s=>s.code===code&&s.name===name))domesticStocksData.push(sd);}
-                else{if(!foreignStocksData.some(s=>s.code===code&&s.name===name))foreignStocksData.push(sd);}
+    if (startIndex === -1) return;
+    for (let i = startIndex; i < data.length; i++) {
+        const row  = data[i];
+        if (!row || row.length < 15) continue;
+        const type = (row[0] || '').trim();
+        if ((type === '国内株式' || type === '米国株式') && row[1] && row[4]) {
+            const code  = row[1].trim(), name = row[2].trim();
+            const quantity    = parseFloat((row[4]  || '').replace(/,/g,''));
+            const avgPrice    = parseFloat((row[6]  || '').replace(/,/g,''));
+            const currentPrice= parseFloat((row[8]  || '').replace(/,/g,''));
+            const marketValue = parseFloat((row[14] || '').replace(/,/g,''));
+            const profitLoss  = parseFloat((row[16] || '').replace(/[+,]/g,''));
+            const profitRate  = parseFloat((row[17] || '').replace(/[+,]/g,''));
+            if (!isNaN(quantity) && !isNaN(currentPrice) && !isNaN(marketValue)) {
+                const info = industryDatabase[code] || {name:'その他',dps:0,months:[3,9]};
+                const estimatedDividend = (info.dps || 0) * quantity;
+                const priceChange = avgPrice > 0 ? ((currentPrice - avgPrice) / avgPrice) * 100 : 0;
+                let recommendation = 'HOLD';
+                if (priceChange <= -15) recommendation = 'STRONG_BUY';
+                else if (priceChange <= -10) recommendation = 'BUY';
+                const sd = {code,name,quantity,avgPrice,currentPrice,marketValue,profitLoss,profitRate,estimatedDividend,recommendation,priceChange,industry:info.name,type};
+                if (type === '国内株式') { if (!domesticStocksData.some(s => s.code===code && s.name===name)) domesticStocksData.push(sd); }
+                else                     { if (!foreignStocksData.some(s  => s.code===code && s.name===name)) foreignStocksData.push(sd); }
             }
-        }
-        else if(type==='投資信託'&&row[1]===''&&row[2]&&row[2].trim()!==''){
-            const fundName=row[2].trim(), accountType=(row[3]||'').trim();
-            const quantity=parseFloat((row[4]||'').replace(/,/g,''));
-            const avgPrice=parseFloat((row[6]||'').replace(/,/g,''));
-            const basePrice=parseFloat((row[8]||'').replace(/,/g,''));
-            const marketValue=parseFloat((row[14]||'').replace(/,/g,''));
-            const profitLoss=parseFloat((row[16]||'').replace(/[+,]/g,''));
-            const profitRate=parseFloat((row[17]||'').replace(/[+,]/g,''));
-            const acquiredTotal=(!isNaN(avgPrice)&&!isNaN(quantity))?Math.round(avgPrice*quantity/10000):0;
-            if(!isNaN(marketValue)&&marketValue>0){
-                let accountClass='account-tokutei',accountLabel='特定';
-                if(accountType.includes('つみたて投資枠')||accountType.includes('NISAつみたて')){accountClass='account-nisa-tsumitate';accountLabel='つみたてNISA';}
-                else if(accountType.includes('成長投資枠')||accountType.includes('NISA成長')){accountClass='account-nisa-growth';accountLabel='成長投資枠';}
-                else if(accountType.includes('iDeCo')||accountType.includes('イデコ')||accountType.includes('確定拠出')){accountClass='account-ideco';accountLabel='iDeCo';}
-                if(!fundsData.some(f=>f.fundName===fundName&&f.accountType===accountType)){
+        } else if (type === '投資信託' && row[1] === '' && row[2] && row[2].trim() !== '') {
+            const fundName   = row[2].trim(), accountType = (row[3] || '').trim();
+            const quantity   = parseFloat((row[4]  || '').replace(/,/g,''));
+            const avgPrice   = parseFloat((row[6]  || '').replace(/,/g,''));
+            const basePrice  = parseFloat((row[8]  || '').replace(/,/g,''));
+            const marketValue= parseFloat((row[14] || '').replace(/,/g,''));
+            const profitLoss = parseFloat((row[16] || '').replace(/[+,]/g,''));
+            const profitRate = parseFloat((row[17] || '').replace(/[+,]/g,''));
+            const acquiredTotal = (!isNaN(avgPrice) && !isNaN(quantity)) ? Math.round(avgPrice * quantity / 10000) : 0;
+            if (!isNaN(marketValue) && marketValue > 0) {
+                let accountClass = 'account-tokutei', accountLabel = '特定';
+                if (accountType.includes('つみたて投資枠') || accountType.includes('NISAつみたて')) { accountClass='account-nisa-tsumitate'; accountLabel='つみたてNISA'; }
+                else if (accountType.includes('成長投資枠') || accountType.includes('NISA成長'))   { accountClass='account-nisa-growth';    accountLabel='成長投資枠'; }
+                else if (accountType.includes('iDeCo') || accountType.includes('イデコ') || accountType.includes('確定拠出')) { accountClass='account-ideco'; accountLabel='iDeCo'; }
+                if (!fundsData.some(f => f.fundName===fundName && f.accountType===accountType)) {
                     fundsData.push({fundName,accountType,accountClass,accountLabel,quantity,avgPrice,acquiredTotal,basePrice,marketValue,profitLoss,profitRate});
                 }
             }
         }
     }
-    allStocksData=[...domesticStocksData,...foreignStocksData];
+    allStocksData = [...domesticStocksData, ...foreignStocksData];
+    saveToLocalStorage();
     updateDashboard();
 }
 
-function updateDashboard(){
-    const totalStocks=domesticStocksData.length+foreignStocksData.length+fundsData.length;
-    if(totalStocks===0) return;
-    document.getElementById('noData').style.display='none';
-    document.getElementById('dashboard').style.display='block';
+function updateDashboard() {
+    const totalStocks = domesticStocksData.length + foreignStocksData.length + fundsData.length;
+    if (totalStocks === 0) return;
+    document.getElementById('noData').style.display    = 'none';
+    document.getElementById('dashboard').style.display = 'block';
 
-    const domVal=domesticStocksData.reduce((s,x)=>s+x.marketValue,0);
-    const domCost=domesticStocksData.reduce((s,x)=>s+(x.avgPrice*x.quantity),0);
-    const domDiv=domesticStocksData.reduce((s,x)=>s+x.estimatedDividend,0);
-    const forVal=foreignStocksData.reduce((s,x)=>s+x.marketValue,0);
-    const forCost=foreignStocksData.reduce((s,x)=>s+(x.avgPrice*x.quantity),0);
-    const funVal=fundsData.reduce((s,f)=>s+f.marketValue,0);
-    const funCost=fundsData.reduce((s,f)=>s+f.acquiredTotal,0);
-    const totalVal=domVal+forVal+funVal;
-    const totalCost=domCost+forCost+funCost;
-    const totalPL=totalVal-totalCost;
-    const profitRate=totalCost>0?(totalPL/totalCost)*100:0;
-    const divBefore=domDiv, divAfter=divBefore*(1-TAX_RATE);
+    const domVal  = domesticStocksData.reduce((s,x) => s + x.marketValue, 0);
+    const domCost = domesticStocksData.reduce((s,x) => s + (x.avgPrice * x.quantity), 0);
+    const domDiv  = domesticStocksData.reduce((s,x) => s + x.estimatedDividend, 0);
+    const forVal  = foreignStocksData.reduce((s,x) => s + x.marketValue, 0);
+    const forCost = foreignStocksData.reduce((s,x) => s + (x.avgPrice * x.quantity), 0);
+    const funVal  = fundsData.reduce((s,f) => s + f.marketValue, 0);
+    const funCost = fundsData.reduce((s,f) => s + (f.acquiredTotal || 0), 0);
+    const totalVal  = domVal + forVal + funVal;
+    const totalCost = domCost + forCost + funCost;
+    const totalPL   = totalVal - totalCost;
+    const profitRate = totalCost > 0 ? (totalPL / totalCost) * 100 : 0;
+    const divBefore = domDiv, divAfter = divBefore * (1 - TAX_RATE);
 
-    document.getElementById('totalValue').textContent=formatCurrency(totalVal);
-    document.getElementById('totalProfit').textContent=formatCurrency(totalPL);
-    document.getElementById('totalProfit').className='card-value '+(totalPL>=0?'positive':'negative');
-    document.getElementById('profitRate').textContent=(profitRate>=0?'+':'')+profitRate.toFixed(2)+'%';
-    document.getElementById('profitRate').className='card-value '+(profitRate>=0?'positive':'negative');
-    document.getElementById('annualDividendBefore').textContent=formatCurrency(divBefore);
-    document.getElementById('annualDividendAfter').textContent=formatCurrency(divAfter);
-    if(totalPL<0) document.getElementById('profitSubtitle').textContent='買った時より減った金額';
+    document.getElementById('totalValue').textContent  = formatCurrency(totalVal);
+    document.getElementById('totalProfit').textContent = formatCurrency(totalPL);
+    document.getElementById('totalProfit').className   = 'card-value ' + (totalPL >= 0 ? 'positive' : 'negative');
+    document.getElementById('profitRate').textContent  = (profitRate >= 0 ? '+' : '') + profitRate.toFixed(2) + '%';
+    document.getElementById('profitRate').className    = 'card-value ' + (profitRate >= 0 ? 'positive' : 'negative');
+    document.getElementById('annualDividendBefore').textContent = formatCurrency(divBefore);
+    document.getElementById('annualDividendAfter').textContent  = formatCurrency(divAfter);
+    if (totalPL < 0) document.getElementById('profitSubtitle').textContent = '買った時より減った金額';
 
-    const sr=calculatePortfolioScore(domesticStocksData,foreignStocksData,fundsData,profitRate);
-    document.getElementById('portfolioScore').innerHTML=`${sr.score}<span class="score-grade">/${sr.grade}</span>`;
-    const se=document.getElementById('portfolioScore');
-    if(sr.score>=80)se.className='card-value score positive';
-    else if(sr.score>=60)se.className='card-value score';
-    else se.className='card-value score negative';
-    document.getElementById('scoreComment').textContent=sr.comments.join(' / ');
+    const sr = calculatePortfolioScore(domesticStocksData, foreignStocksData, fundsData, profitRate);
+    document.getElementById('portfolioScore').innerHTML = `${sr.score}<span class="score-grade">/${sr.grade}</span>`;
+    const se = document.getElementById('portfolioScore');
+    if (sr.score >= 80)      se.className = 'card-value score positive';
+    else if (sr.score >= 60) se.className = 'card-value score';
+    else                     se.className = 'card-value score negative';
+    document.getElementById('scoreComment').textContent = sr.comments.join(' / ');
 
-    document.getElementById('marketAnalysisContent').innerHTML=generateMarketAnalysis(profitRate,fearGreedIndex);
+    document.getElementById('marketAnalysisContent').innerHTML = generateMarketAnalysis(profitRate, fearGreedIndex);
 
-    const parts=[];
-    if(domesticStocksData.length>0)parts.push(`国内株${domesticStocksData.length}銘柄`);
-    if(foreignStocksData.length>0)parts.push(`外国株${foreignStocksData.length}銘柄`);
-    if(fundsData.length>0)parts.push(`投資信託${fundsData.length}本`);
-    document.getElementById('uploadStatus').innerHTML=`<div class="file-status">✓ ${parts.join(' / ')}</div>`;
+    const parts = [];
+    if (domesticStocksData.length > 0) parts.push(`国内株${domesticStocksData.length}銘柄`);
+    if (foreignStocksData.length > 0)  parts.push(`外国株${foreignStocksData.length}銘柄`);
+    if (fundsData.length > 0)          parts.push(`投資信託${fundsData.length}本`);
+    document.getElementById('uploadStatus').innerHTML = `<div class="file-status">✓ ${parts.join(' / ')} 💾保存済み</div>`;
 
-    if(domesticStocksData.length>0){
-        displayStockTable(domesticStocksData,'domesticTableBody');
+    if (domesticStocksData.length > 0) {
+        displayStockTable(domesticStocksData, 'domesticTableBody');
         createIndustrySummary(domesticStocksData);
         createIndustryChart(domesticStocksData);
         createDomesticPerformanceChart(domesticStocksData);
         createMonthlyDividend(domesticStocksData);
     }
-    if(foreignStocksData.length>0){
-        displayStockTable(foreignStocksData,'foreignTableBody');
+    if (foreignStocksData.length > 0) {
+        displayStockTable(foreignStocksData, 'foreignTableBody');
         createForeignPerformanceChart(foreignStocksData);
     }
-    if(fundsData.length>0) displayFundTable(fundsData);
-    createAssetTypeChart(domVal,forVal,funVal);
+    if (fundsData.length > 0) displayFundTable(fundsData);
+    createAssetTypeChart(domVal, forVal, funVal);
 }
 
 // ── Display tables ──
-function displayStockTable(stocks, tbodyId){
-    const tbody=document.getElementById(tbodyId);
-    tbody.innerHTML='';
-    const sorted=[...stocks].sort((a,b)=>b.marketValue-a.marketValue);
-    sorted.forEach(stock=>{
-        const tr=document.createElement('tr');
-        tr.className='stock-row';
-        tr.onclick=()=>showStockDetail(stock);
-        let rBadge='';
-        if(stock.recommendation==='STRONG_BUY')rBadge='<span class="badge strong-buy">🔥 今が買い時！</span>';
-        else if(stock.recommendation==='BUY')rBadge='<span class="badge buy">💡 買い増し検討</span>';
-        else rBadge='<span class="badge hold">✓ 保持</span>';
-        const indB=stock.industry?`<span class="industry-badge industry-${stock.industry}">${stock.industry}</span>`:'';
-        const adv=generateActionAdvice(stock);
-        const ac=adv.action==='-'?'action-cell empty':'action-cell';
-        tr.innerHTML=`
+function displayStockTable(stocks, tbodyId) {
+    const tbody  = document.getElementById(tbodyId);
+    tbody.innerHTML = '';
+    const sorted = [...stocks].sort((a,b) => b.marketValue - a.marketValue);
+    sorted.forEach(stock => {
+        const tr = document.createElement('tr');
+        tr.className = 'stock-row';
+        tr.onclick   = () => showStockDetail(stock);
+        let rBadge = '';
+        if (stock.recommendation === 'STRONG_BUY') rBadge = '<span class="badge strong-buy">🔥 今が買い時！</span>';
+        else if (stock.recommendation === 'BUY')   rBadge = '<span class="badge buy">💡 買い増し検討</span>';
+        else                                        rBadge = '<span class="badge hold">✓ 保持</span>';
+        const indB = stock.industry ? `<span class="industry-badge industry-${stock.industry}">${stock.industry}</span>` : '';
+        const adv  = generateActionAdvice(stock);
+        const ac   = adv.action === '-' ? 'action-cell empty' : 'action-cell';
+        tr.innerHTML = `
             <td><div class="stock-code">${stock.code}</div><div class="stock-name">${stock.name}</div></td>
             <td>${indB}</td>
             <td><strong>${stock.quantity.toLocaleString()}</strong>株</td>
             <td>¥${stock.avgPrice.toLocaleString()}</td>
             <td><strong>¥${stock.currentPrice.toLocaleString()}</strong></td>
-            <td class="${stock.profitLoss>=0?'positive-value':'negative-value'}">${stock.profitLoss>=0?'+':''}¥${stock.profitLoss.toLocaleString()}</td>
-            <td class="${stock.profitRate>=0?'positive-value':'negative-value'}">${stock.profitRate>=0?'+':''}${stock.profitRate.toFixed(2)}%</td>
+            <td class="${stock.profitLoss >= 0 ? 'positive-value' : 'negative-value'}">${stock.profitLoss >= 0 ? '+' : ''}¥${stock.profitLoss.toLocaleString()}</td>
+            <td class="${stock.profitRate >= 0 ? 'positive-value' : 'negative-value'}">${stock.profitRate >= 0 ? '+' : ''}${stock.profitRate.toFixed(2)}%</td>
             <td><strong>¥${stock.marketValue.toLocaleString()}</strong></td>
             <td>${rBadge}</td>
             <td class="${ac}">${adv.action}</td>
@@ -1203,60 +1296,52 @@ function displayStockTable(stocks, tbodyId){
     });
 }
 
-function displayFundTable(funds){
-    const tbody=document.getElementById('fundsTableBody');
-    tbody.innerHTML='';
-    [...funds].sort((a,b)=>b.marketValue-a.marketValue).forEach(fund=>{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
+function displayFundTable(funds) {
+    const tbody = document.getElementById('fundsTableBody');
+    tbody.innerHTML = '';
+    [...funds].sort((a,b) => b.marketValue - a.marketValue).forEach(fund => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
             <td><div style="font-weight:600;color:var(--text-primary);max-width:400px">${fund.fundName}</div></td>
             <td><span class="account-badge ${fund.accountClass}">${fund.accountLabel}</span></td>
             <td><strong>${fund.quantity.toLocaleString()}</strong>口</td>
             <td>¥${fund.avgPrice.toLocaleString()}</td>
             <td><strong>¥${fund.basePrice.toLocaleString()}</strong></td>
-            <td class="${fund.profitLoss>=0?'positive-value':'negative-value'}">${fund.profitLoss>=0?'+':''}¥${fund.profitLoss.toLocaleString()}</td>
-            <td class="${fund.profitRate>=0?'positive-value':'negative-value'}">${fund.profitRate>=0?'+':''}${fund.profitRate.toFixed(2)}%</td>
+            <td class="${fund.profitLoss >= 0 ? 'positive-value' : 'negative-value'}">${fund.profitLoss >= 0 ? '+' : ''}¥${fund.profitLoss.toLocaleString()}</td>
+            <td class="${fund.profitRate >= 0 ? 'positive-value' : 'negative-value'}">${fund.profitRate >= 0 ? '+' : ''}${fund.profitRate.toFixed(2)}%</td>
             <td><strong>¥${fund.marketValue.toLocaleString()}</strong></td>`;
         tbody.appendChild(tr);
     });
 }
 
 // ── Stock detail modal ──
-function showStockDetail(stock){
-    const info=industryDatabase[stock.code]||{name:'その他',dps:0,months:[]};
-    const MONTH_NAMES=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-    const currentMonth=new Date().getMonth();
-    const isPos=stock.profitRate>=0;
-    const plColor=isPos?'#00A67E':'#ef4444';
-    const adv=generateActionAdvice(stock);
-
-    // Dividend monthly
-    const monthlyDiv=new Array(12).fill(0);
-    if(info.months&&info.months.length>0){
-        const perTime=stock.estimatedDividend/info.months.length;
-        info.months.forEach(m=>{monthlyDiv[m-1]+=perTime;});
+function showStockDetail(stock) {
+    const info = industryDatabase[stock.code] || {name:'その他', dps:0, months:[]};
+    const MONTH_NAMES = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    const currentMonth = new Date().getMonth();
+    const isPos  = stock.profitRate >= 0;
+    const plColor= isPos ? '#00A67E' : '#ef4444';
+    const adv    = generateActionAdvice(stock);
+    const monthlyDiv = new Array(12).fill(0);
+    if (info.months && info.months.length > 0) {
+        const perTime = stock.estimatedDividend / info.months.length;
+        info.months.forEach(m => { monthlyDiv[m-1] += perTime; });
     }
-
-    const miniMonths=MONTH_NAMES.map((mn,idx)=>{
-        const active=monthlyDiv[idx]>0;
-        const isCur=idx===currentMonth;
+    const miniMonths = MONTH_NAMES.map((mn,idx) => {
+        const active = monthlyDiv[idx] > 0, isCur = idx === currentMonth;
         return `<div class="sdm-mini-month ${active?'active':'inactive'} ${isCur?'current-month':''}">
             <div class="sdm-mini-month-name">${mn}</div>
-            <div class="sdm-mini-month-amt">${active?'¥'+Math.round(monthlyDiv[idx]).toLocaleString():'-'}</div>
+            <div class="sdm-mini-month-amt">${active ? '¥'+Math.round(monthlyDiv[idx]).toLocaleString() : '-'}</div>
         </div>`;
     }).join('');
-
-    // P&L bar width (cap at 100%)
-    const barWidth=Math.min(100,Math.abs(stock.profitRate));
-    const yieldPct=stock.avgPrice>0&&info.dps>0?((info.dps/stock.avgPrice)*100).toFixed(2):'--';
-
-    const content=document.getElementById('stockDetailContent');
-    content.innerHTML=`
+    const barWidth  = Math.min(100, Math.abs(stock.profitRate));
+    const yieldPct  = stock.avgPrice > 0 && info.dps > 0 ? ((info.dps / stock.avgPrice) * 100).toFixed(2) : '--';
+    const content   = document.getElementById('stockDetailContent');
+    content.innerHTML = `
         <div class="modal-header" style="padding-bottom:0;border-bottom:none;margin-bottom:0">
             <div></div>
             <button class="modal-close" onclick="closeStockDetail()">×</button>
         </div>
-        <!-- Header bar -->
         <div class="sdm-header-bar">
             <div>
                 <div class="sdm-code">${stock.code} · ${info.name}</div>
@@ -1268,48 +1353,16 @@ function showStockDetail(stock){
                 <div class="sdm-pl-label">損益率</div>
             </div>
         </div>
-
-        <!-- P&L bar -->
-        <div class="sdm-pl-bar-wrap">
-            <div class="sdm-pl-bar-fill" style="width:${barWidth}%;background:${plColor}"></div>
-        </div>
-
-        <!-- Metrics grid -->
+        <div class="sdm-pl-bar-wrap"><div class="sdm-pl-bar-fill" style="width:${barWidth}%;background:${plColor}"></div></div>
         <div class="sdm-metrics">
-            <div class="sdm-metric">
-                <div class="sdm-metric-label">保有株数</div>
-                <div class="sdm-metric-value">${stock.quantity.toLocaleString()}</div>
-                <div class="sdm-metric-sub">株</div>
-            </div>
-            <div class="sdm-metric">
-                <div class="sdm-metric-label">平均取得価格</div>
-                <div class="sdm-metric-value">¥${Math.round(stock.avgPrice).toLocaleString()}</div>
-                <div class="sdm-metric-sub">1株あたり</div>
-            </div>
-            <div class="sdm-metric">
-                <div class="sdm-metric-label">現在価格</div>
-                <div class="sdm-metric-value">¥${Math.round(stock.currentPrice).toLocaleString()}</div>
-                <div class="sdm-metric-sub">1株あたり</div>
-            </div>
-            <div class="sdm-metric">
-                <div class="sdm-metric-label">時価評価額</div>
-                <div class="sdm-metric-value" style="font-size:15px">¥${stock.marketValue.toLocaleString()}</div>
-                <div class="sdm-metric-sub">合計</div>
-            </div>
-            <div class="sdm-metric">
-                <div class="sdm-metric-label">評価損益</div>
-                <div class="sdm-metric-value" style="color:${plColor};font-size:15px">${isPos?'+':''}¥${stock.profitLoss.toLocaleString()}</div>
-                <div class="sdm-metric-sub">含み${isPos?'益':'損'}</div>
-            </div>
-            <div class="sdm-metric">
-                <div class="sdm-metric-label">配当利回り</div>
-                <div class="sdm-metric-value" style="color:var(--primary)">${yieldPct}%</div>
-                <div class="sdm-metric-sub">取得単価ベース</div>
-            </div>
+            <div class="sdm-metric"><div class="sdm-metric-label">保有株数</div><div class="sdm-metric-value">${stock.quantity.toLocaleString()}</div><div class="sdm-metric-sub">株</div></div>
+            <div class="sdm-metric"><div class="sdm-metric-label">平均取得価格</div><div class="sdm-metric-value">¥${Math.round(stock.avgPrice).toLocaleString()}</div><div class="sdm-metric-sub">1株あたり</div></div>
+            <div class="sdm-metric"><div class="sdm-metric-label">現在価格</div><div class="sdm-metric-value">¥${Math.round(stock.currentPrice).toLocaleString()}</div><div class="sdm-metric-sub">1株あたり</div></div>
+            <div class="sdm-metric"><div class="sdm-metric-label">時価評価額</div><div class="sdm-metric-value" style="font-size:15px">¥${stock.marketValue.toLocaleString()}</div><div class="sdm-metric-sub">合計</div></div>
+            <div class="sdm-metric"><div class="sdm-metric-label">評価損益</div><div class="sdm-metric-value" style="color:${plColor};font-size:15px">${isPos?'+':''}¥${stock.profitLoss.toLocaleString()}</div><div class="sdm-metric-sub">含み${isPos?'益':'損'}</div></div>
+            <div class="sdm-metric"><div class="sdm-metric-label">配当利回り</div><div class="sdm-metric-value" style="color:var(--primary)">${yieldPct}%</div><div class="sdm-metric-sub">取得単価ベース</div></div>
         </div>
-
-        <!-- Dividend section -->
-        ${info.dps>0?`
+        ${info.dps > 0 ? `
         <div class="sdm-section-title">💰 配当予測（${stock.name}）</div>
         <div class="sdm-div-section">
             <div class="sdm-div-total">
@@ -1326,52 +1379,47 @@ function showStockDetail(stock){
             </div>
             <div class="sdm-section-title" style="margin-bottom:8px">📅 配当受取月</div>
             <div class="sdm-mini-months">${miniMonths}</div>
-        </div>`:`
+        </div>` : `
         <div class="sdm-div-section">
             <div style="color:var(--text-muted);font-size:14px">このデータベースには配当情報が未登録の銘柄です。IRページでご確認ください。</div>
         </div>`}
-
-        <!-- Advice box -->
-        ${adv.action!=='-'?`
+        ${adv.action !== '-' ? `
         <div class="sdm-section-title" style="margin-top:16px">🤖 AIアドバイス</div>
         <div class="sdm-advice-box">
             <p><strong>推奨アクション：${adv.action}</strong></p>
             <p style="margin-top:8px">${adv.reason}</p>
-        </div>`:''}
-    `;
+        </div>` : ''}`;
     document.getElementById('stockDetailModal').classList.add('active');
 }
 
-function closeStockDetail(){
-    document.getElementById('stockDetailModal').classList.remove('active');
-}
+function closeStockDetail() { document.getElementById('stockDetailModal').classList.remove('active'); }
 
 // ── Industry modals ──
-function createIndustrySummary(stocks){
-    const counts={};
-    stocks.forEach(s=>{counts[s.industry]=(counts[s.industry]||0)+1;});
-    const grid=document.getElementById('industryGrid');
-    grid.innerHTML='';
-    Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([industry,count])=>{
-        const item=document.createElement('div');
-        item.className='industry-item';
-        item.onclick=()=>showIndustryStocks(industry,stocks);
-        item.innerHTML=`<div class="industry-item-name">${industry}</div><div class="industry-item-count">${count}</div><div class="industry-item-label">銘柄</div>`;
+function createIndustrySummary(stocks) {
+    const counts = {};
+    stocks.forEach(s => { counts[s.industry] = (counts[s.industry] || 0) + 1; });
+    const grid = document.getElementById('industryGrid');
+    grid.innerHTML = '';
+    Object.entries(counts).sort((a,b) => b[1] - a[1]).forEach(([industry, count]) => {
+        const item = document.createElement('div');
+        item.className = 'industry-item';
+        item.onclick   = () => showIndustryStocks(industry, stocks);
+        item.innerHTML = `<div class="industry-item-name">${industry}</div><div class="industry-item-count">${count}</div><div class="industry-item-label">銘柄</div>`;
         grid.appendChild(item);
     });
 }
 
-function showIndustryStocks(industry,allStocks){
-    const stocks=allStocks.filter(s=>s.industry===industry);
-    document.getElementById('modalIndustryName').textContent=`${industry}業界の銘柄`;
-    const lc=document.getElementById('modalStockList');
-    lc.innerHTML='';
-    stocks.sort((a,b)=>b.marketValue-a.marketValue).forEach(stock=>{
-        const item=document.createElement('div');
-        item.className='stock-list-item';
-        item.style.cursor='pointer';
-        item.onclick=()=>{closeIndustryModal();setTimeout(()=>showStockDetail(stock),150);};
-        item.innerHTML=`
+function showIndustryStocks(industry, allStocks) {
+    const stocks = allStocks.filter(s => s.industry === industry);
+    document.getElementById('modalIndustryName').textContent = `${industry}業界の銘柄`;
+    const lc = document.getElementById('modalStockList');
+    lc.innerHTML = '';
+    stocks.sort((a,b) => b.marketValue - a.marketValue).forEach(stock => {
+        const item = document.createElement('div');
+        item.className = 'stock-list-item';
+        item.style.cursor = 'pointer';
+        item.onclick = () => { closeIndustryModal(); setTimeout(() => showStockDetail(stock), 150); };
+        item.innerHTML = `
             <div class="stock-list-code">${stock.code}</div>
             <div class="stock-list-name">${stock.name} <span style="font-size:12px;color:var(--text-muted)">（クリックで詳細）</span></div>
             <div class="stock-list-details">
@@ -1385,88 +1433,88 @@ function showIndustryStocks(industry,allStocks){
     document.getElementById('industryModal').classList.add('active');
 }
 
-function closeIndustryModal(){document.getElementById('industryModal').classList.remove('active');}
+function closeIndustryModal() { document.getElementById('industryModal').classList.remove('active'); }
 
-document.addEventListener('click',function(e){
-    if(e.target===document.getElementById('industryModal'))closeIndustryModal();
-    if(e.target===document.getElementById('stockDetailModal'))closeStockDetail();
+document.addEventListener('click', function(e) {
+    if (e.target === document.getElementById('industryModal'))    closeIndustryModal();
+    if (e.target === document.getElementById('stockDetailModal')) closeStockDetail();
 });
 
 // ── Charts ──
-function createIndustryChart(stocks){
-    const ctx=document.getElementById('industryChart').getContext('2d');
-    if(industryChart)industryChart.destroy();
-    const totals={};
-    stocks.forEach(s=>{totals[s.industry]=(totals[s.industry]||0)+s.marketValue;});
-    const sorted=Object.entries(totals).sort((a,b)=>b[1]-a[1]);
-    industryChart=new Chart(ctx,{type:'doughnut',data:{
-        labels:sorted.map(e=>e[0]),
-        datasets:[{data:sorted.map(e=>e[1]),backgroundColor:['#005D4D','#007A63','#00A67E','#4DB89A','#A3D1CA','#6366f1','#8b5cf6','#ec4899','#f59e0b','#ef4444'],borderWidth:3,borderColor:'#fff'}]
-    },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{padding:15,font:{size:12}}},tooltip:{callbacks:{label:function(ctx){const v=ctx.parsed;const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return `${ctx.label}: ¥${v.toLocaleString()} (${((v/t)*100).toFixed(1)}%)`;}}}}}}); 
+function createIndustryChart(stocks) {
+    const ctx = document.getElementById('industryChart').getContext('2d');
+    if (industryChart) industryChart.destroy();
+    const totals = {};
+    stocks.forEach(s => { totals[s.industry] = (totals[s.industry] || 0) + s.marketValue; });
+    const sorted = Object.entries(totals).sort((a,b) => b[1] - a[1]);
+    industryChart = new Chart(ctx, {type:'doughnut', data:{
+        labels: sorted.map(e => e[0]),
+        datasets:[{data: sorted.map(e => e[1]), backgroundColor:['#005D4D','#007A63','#00A67E','#4DB89A','#A3D1CA','#6366f1','#8b5cf6','#ec4899','#f59e0b','#ef4444'], borderWidth:3, borderColor:'#fff'}]
+    }, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{padding:15,font:{size:12}}}, tooltip:{callbacks:{label:function(ctx){const v=ctx.parsed, t=ctx.dataset.data.reduce((a,b)=>a+b,0); return `${ctx.label}: ¥${v.toLocaleString()} (${((v/t)*100).toFixed(1)}%)`;}}}}}});
 }
 
-function createAssetTypeChart(dv,fv,funv){
-    const ctx=document.getElementById('assetTypeChart').getContext('2d');
-    if(assetTypeChart)assetTypeChart.destroy();
-    const labels=[],vals=[],cols=[];
-    if(dv>0){labels.push('国内株式');vals.push(dv);cols.push('#005D4D');}
-    if(fv>0){labels.push('外国株式');vals.push(fv);cols.push('#6366f1');}
-    if(funv>0){labels.push('投資信託');vals.push(funv);cols.push('#ec4899');}
-    assetTypeChart=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:cols,borderWidth:3,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{padding:15,font:{size:12}}},tooltip:{callbacks:{label:function(c){const v=c.parsed,t=c.dataset.data.reduce((a,b)=>a+b,0);return `${c.label}: ¥${v.toLocaleString()} (${((v/t)*100).toFixed(1)}%)`;}}}}}}); 
+function createAssetTypeChart(dv, fv, funv) {
+    const ctx = document.getElementById('assetTypeChart').getContext('2d');
+    if (assetTypeChart) assetTypeChart.destroy();
+    const labels=[], vals=[], cols=[];
+    if (dv   > 0) { labels.push('国内株式'); vals.push(dv);   cols.push('#005D4D'); }
+    if (fv   > 0) { labels.push('外国株式'); vals.push(fv);   cols.push('#6366f1'); }
+    if (funv > 0) { labels.push('投資信託'); vals.push(funv); cols.push('#ec4899'); }
+    assetTypeChart = new Chart(ctx, {type:'doughnut', data:{labels, datasets:[{data:vals, backgroundColor:cols, borderWidth:3, borderColor:'#fff'}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{padding:15,font:{size:12}}}, tooltip:{callbacks:{label:function(c){const v=c.parsed, t=c.dataset.data.reduce((a,b)=>a+b,0); return `${c.label}: ¥${v.toLocaleString()} (${((v/t)*100).toFixed(1)}%)`;}}}}}});
 }
 
-function createDomesticPerformanceChart(stocks){
-    const ctx=document.getElementById('domesticPerformanceChart').getContext('2d');
-    if(domesticPerformanceChart)domesticPerformanceChart.destroy();
-    if(!stocks.length) return;
-    const sorted=[...stocks].sort((a,b)=>b.profitRate-a.profitRate);
-    domesticPerformanceChart=new Chart(ctx,{type:'bar',data:{
-        labels:sorted.map(s=>s.name.length>15?s.name.substring(0,15)+'…':s.name),
-        datasets:[{label:'損益率 (%)',data:sorted.map(s=>s.profitRate),backgroundColor:sorted.map(s=>s.profitRate>=0?'#005D4D':'#ef4444'),borderRadius:8}]
-    },options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`損益率: ${c.parsed.x>=0?'+':''}${c.parsed.x.toFixed(2)}%`}}},scales:{x:{ticks:{callback:v=>v+'%'}},y:{ticks:{font:{size:11}}}}}}); 
+function createDomesticPerformanceChart(stocks) {
+    const ctx = document.getElementById('domesticPerformanceChart').getContext('2d');
+    if (domesticPerformanceChart) domesticPerformanceChart.destroy();
+    if (!stocks.length) return;
+    const sorted = [...stocks].sort((a,b) => b.profitRate - a.profitRate);
+    domesticPerformanceChart = new Chart(ctx, {type:'bar', data:{
+        labels: sorted.map(s => s.name.length > 15 ? s.name.substring(0,15)+'…' : s.name),
+        datasets:[{label:'損益率 (%)', data:sorted.map(s=>s.profitRate), backgroundColor:sorted.map(s=>s.profitRate>=0?'#005D4D':'#ef4444'), borderRadius:8}]
+    }, options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>`損益率: ${c.parsed.x>=0?'+':''}${c.parsed.x.toFixed(2)}%`}}}, scales:{x:{ticks:{callback:v=>v+'%'}}, y:{ticks:{font:{size:11}}}}}});
 }
 
-function createForeignPerformanceChart(stocks){
-    const ctx=document.getElementById('foreignPerformanceChart').getContext('2d');
-    if(foreignPerformanceChart)foreignPerformanceChart.destroy();
-    if(!stocks.length) return;
-    const sorted=[...stocks].sort((a,b)=>b.profitRate-a.profitRate);
-    foreignPerformanceChart=new Chart(ctx,{type:'bar',data:{
-        labels:sorted.map(s=>s.name.length>15?s.name.substring(0,15)+'…':s.name),
-        datasets:[{label:'損益率 (%)',data:sorted.map(s=>s.profitRate),backgroundColor:sorted.map(s=>s.profitRate>=0?'#6366f1':'#ef4444'),borderRadius:8}]
-    },options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`損益率: ${c.parsed.x>=0?'+':''}${c.parsed.x.toFixed(2)}%`}}},scales:{x:{ticks:{callback:v=>v+'%'}},y:{ticks:{font:{size:11}}}}}}); 
+function createForeignPerformanceChart(stocks) {
+    const ctx = document.getElementById('foreignPerformanceChart').getContext('2d');
+    if (foreignPerformanceChart) foreignPerformanceChart.destroy();
+    if (!stocks.length) return;
+    const sorted = [...stocks].sort((a,b) => b.profitRate - a.profitRate);
+    foreignPerformanceChart = new Chart(ctx, {type:'bar', data:{
+        labels: sorted.map(s => s.name.length > 15 ? s.name.substring(0,15)+'…' : s.name),
+        datasets:[{label:'損益率 (%)', data:sorted.map(s=>s.profitRate), backgroundColor:sorted.map(s=>s.profitRate>=0?'#6366f1':'#ef4444'), borderRadius:8}]
+    }, options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>`損益率: ${c.parsed.x>=0?'+':''}${c.parsed.x.toFixed(2)}%`}}}, scales:{x:{ticks:{callback:v=>v+'%'}}, y:{ticks:{font:{size:11}}}}}});
 }
 
 // ── Monthly dividend calendar ──
-function createMonthlyDividend(stocks){
-    const MONTH_NAMES=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-    const MONTH_EN=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-    const currentMonth=new Date().getMonth();
-    const monthly=new Array(12).fill(0);
-    const mStocks=Array.from({length:12},()=>[]);
-    stocks.forEach(stock=>{
-        const info=industryDatabase[stock.code];
-        if(info&&info.months&&info.months.length>0){
-            const per=stock.estimatedDividend/info.months.length;
-            info.months.forEach(m=>{monthly[m-1]+=per;mStocks[m-1].push({name:stock.name,amount:Math.round(per)});});
+function createMonthlyDividend(stocks) {
+    const MONTH_NAMES = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    const MONTH_EN    = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const currentMonth = new Date().getMonth();
+    const monthly  = new Array(12).fill(0);
+    const mStocks  = Array.from({length:12}, () => []);
+    stocks.forEach(stock => {
+        const info = industryDatabase[stock.code];
+        if (info && info.months && info.months.length > 0) {
+            const per = stock.estimatedDividend / info.months.length;
+            info.months.forEach(m => { monthly[m-1] += per; mStocks[m-1].push({name:stock.name, amount:Math.round(per)}); });
         } else {
-            const per=stock.estimatedDividend/2;
-            [2,8].forEach(idx=>{monthly[idx]+=per;mStocks[idx].push({name:stock.name,amount:Math.round(per)});});
+            const per = stock.estimatedDividend / 2;
+            [2, 8].forEach(idx => { monthly[idx] += per; mStocks[idx].push({name:stock.name, amount:Math.round(per)}); });
         }
     });
-    const totalBefore=monthly.reduce((s,v)=>s+v,0);
-    const bannerB=document.getElementById('divTotalBefore'),bannerA=document.getElementById('divTotalAfter');
-    if(bannerB)bannerB.textContent='¥'+Math.round(totalBefore).toLocaleString();
-    if(bannerA)bannerA.textContent='¥'+Math.round(totalBefore*(1-TAX_RATE)).toLocaleString();
-    const container=document.getElementById('monthlyDividend');
-    container.innerHTML='';
-    MONTH_NAMES.forEach((mName,idx)=>{
-        const before=monthly[idx],after=before*(1-TAX_RATE),hasDiv=before>0,isCur=idx===currentMonth;
-        const card=document.createElement('div');
-        card.className='month-card '+(hasDiv?'has-dividend':'no-dividend')+(isCur?' current-month':'');
-        if(hasDiv){
-            const topStocks=mStocks[idx].sort((a,b)=>b.amount-a.amount).slice(0,5).map(s=>`${s.name.substring(0,10)} ¥${s.amount.toLocaleString()}`).join('\n');
-            card.innerHTML=`<div class="mc-month">${MONTH_EN[idx]} / ${mName}</div>
+    const totalBefore = monthly.reduce((s,v) => s + v, 0);
+    const bannerB = document.getElementById('divTotalBefore'), bannerA = document.getElementById('divTotalAfter');
+    if (bannerB) bannerB.textContent = '¥' + Math.round(totalBefore).toLocaleString();
+    if (bannerA) bannerA.textContent = '¥' + Math.round(totalBefore * (1 - TAX_RATE)).toLocaleString();
+    const container = document.getElementById('monthlyDividend');
+    container.innerHTML = '';
+    MONTH_NAMES.forEach((mName, idx) => {
+        const before = monthly[idx], after = before * (1 - TAX_RATE), hasDiv = before > 0, isCur = idx === currentMonth;
+        const card = document.createElement('div');
+        card.className = 'month-card ' + (hasDiv ? 'has-dividend' : 'no-dividend') + (isCur ? ' current-month' : '');
+        if (hasDiv) {
+            const topStocks = mStocks[idx].sort((a,b) => b.amount - a.amount).slice(0,5).map(s=>`${s.name.substring(0,10)} ¥${s.amount.toLocaleString()}`).join('\n');
+            card.innerHTML = `<div class="mc-month">${MONTH_EN[idx]} / ${mName}</div>
                 <div class="mc-main-amount">¥${Math.round(before).toLocaleString()}</div>
                 <div class="mc-main-label">税引前（推定）</div>
                 <hr class="mc-divider">
@@ -1474,281 +1522,163 @@ function createMonthlyDividend(stocks){
                 <div class="mc-after-label">👛 実際に受け取る額</div>
                 <div class="mc-stocks-tooltip" style="white-space:pre">${topStocks}</div>`;
         } else {
-            card.innerHTML=`<div class="mc-month">${MONTH_EN[idx]} / ${mName}</div><div class="mc-no-div-text">配当なし</div>`;
+            card.innerHTML = `<div class="mc-month">${MONTH_EN[idx]} / ${mName}</div><div class="mc-no-div-text">配当なし</div>`;
         }
         container.appendChild(card);
     });
 }
 
-function formatCurrency(v){ return '¥'+Math.round(v).toLocaleString(); }
+function formatCurrency(v) { return '¥' + Math.round(v).toLocaleString(); }
 
-// ── Init ──
-fetchFearGreedIndex();
+// ══════════════════════════════════════════════
+//  INIT — LocalStorageからロード → FGI取得
+// ══════════════════════════════════════════════
+(function init() {
+    const loaded = loadFromLocalStorage();
+    if (loaded) updateDashboard();
+    fetchFearGreedIndex();   // 毎回必ず最新を取りに行く
+})();
 
-// ═══════════════════════════════════════════
-//  PDF エクスポート（改善版：文字切れ対策済み）
-// ═══════════════════════════════════════════
-async function exportToPDF(){
-    const btn=document.getElementById('pdfExportBtn');
-    if(!btn) return;
-    const totalItems=domesticStocksData.length+foreignStocksData.length+fundsData.length;
-    if(totalItems===0){alert('CSVデータをアップロードしてからPDF出力してください。');return;}
-
-    btn.disabled=true;
-    btn.innerHTML='⏳ 生成中...';
-    const overlay=document.createElement('div');
-    overlay.className='pdf-overlay';
-    overlay.innerHTML=`<div class="pdf-overlay-box"><div class="pdf-spinner"></div><div class="pdf-overlay-title">PDFレポートを生成しています</div><div class="pdf-overlay-sub" id="pdfProgress">データを集計中...</div></div>`;
+// ══════════════════════════════════════════════
+//  PDF エクスポート
+// ══════════════════════════════════════════════
+async function exportToPDF() {
+    const btn = document.getElementById('pdfExportBtn');
+    if (!btn) return;
+    const totalItems = domesticStocksData.length + foreignStocksData.length + fundsData.length;
+    if (totalItems === 0) { alert('CSVデータをアップロードしてからPDF出力してください。'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '⏳ 生成中...';
+    const overlay = document.createElement('div');
+    overlay.className = 'pdf-overlay';
+    overlay.innerHTML = `<div class="pdf-overlay-box"><div class="pdf-spinner"></div><div class="pdf-overlay-title">PDFレポートを生成しています</div><div class="pdf-overlay-sub" id="pdfProgress">データを集計中...</div></div>`;
     document.body.appendChild(overlay);
-    const setP=msg=>{const el=document.getElementById('pdfProgress');if(el)el.textContent=msg;};
-
+    const setP = msg => { const el = document.getElementById('pdfProgress'); if (el) el.textContent = msg; };
     try {
-        const {jsPDF}=window.jspdf;
+        const {jsPDF} = window.jspdf;
         setP('データを集計中...');
-        await new Promise(r=>setTimeout(r,50));
-
-        const domVal=domesticStocksData.reduce((s,x)=>s+x.marketValue,0);
-        const forVal=foreignStocksData.reduce((s,x)=>s+x.marketValue,0);
-        const funVal=fundsData.reduce((s,x)=>s+x.marketValue,0);
-        const totalVal=domVal+forVal+funVal;
-        const domCost=domesticStocksData.reduce((s,x)=>s+(x.avgPrice*x.quantity),0);
-        const forCost=foreignStocksData.reduce((s,x)=>s+(x.avgPrice*x.quantity),0);
-        const funCost=fundsData.reduce((s,x)=>s+(x.acquiredTotal||0),0);
-        const totalCost=domCost+forCost+funCost;
-        const totalPL=totalVal-totalCost;
-        const totalPLRate=totalCost>0?(totalPL/totalCost*100):0;
-        const annualDiv=domesticStocksData.reduce((s,x)=>s+x.estimatedDividend,0);
-        const annualDivAT=annualDiv*(1-TAX_RATE);
-
-        const monthly=new Array(12).fill(0);
-        domesticStocksData.forEach(stock=>{
-            const info=industryDatabase[stock.code];
-            if(info&&info.months){const per=stock.estimatedDividend/info.months.length;info.months.forEach(m=>{monthly[m-1]+=per;});}
-            else{monthly[2]+=stock.estimatedDividend/2;monthly[8]+=stock.estimatedDividend/2;}
+        await new Promise(r => setTimeout(r, 50));
+        const domVal = domesticStocksData.reduce((s,x) => s + x.marketValue, 0);
+        const forVal = foreignStocksData.reduce((s,x) => s + x.marketValue, 0);
+        const funVal = fundsData.reduce((s,x) => s + x.marketValue, 0);
+        const totalVal  = domVal + forVal + funVal;
+        const domCost   = domesticStocksData.reduce((s,x) => s + (x.avgPrice * x.quantity), 0);
+        const forCost   = foreignStocksData.reduce((s,x) => s + (x.avgPrice * x.quantity), 0);
+        const funCost   = fundsData.reduce((s,x) => s + (x.acquiredTotal || 0), 0);
+        const totalCost = domCost + forCost + funCost;
+        const totalPL   = totalVal - totalCost;
+        const totalPLRate = totalCost > 0 ? (totalPL / totalCost * 100) : 0;
+        const annualDiv   = domesticStocksData.reduce((s,x) => s + x.estimatedDividend, 0);
+        const annualDivAT = annualDiv * (1 - TAX_RATE);
+        const monthly = new Array(12).fill(0);
+        domesticStocksData.forEach(stock => {
+            const info = industryDatabase[stock.code];
+            if (info && info.months) { const per = stock.estimatedDividend / info.months.length; info.months.forEach(m => { monthly[m-1] += per; }); }
+            else { monthly[2] += stock.estimatedDividend / 2; monthly[8] += stock.estimatedDividend / 2; }
         });
-
-        const fmt=v=>'¥'+Math.round(Math.abs(v)).toLocaleString('ja-JP');
-        const fmtSign=v=>(v>=0?'+':'-')+fmt(v);
-        const fmtPct=v=>(v>=0?'+':'')+v.toFixed(2)+'%';
-        const today=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
-        const fgLabel=fearGreedIndex===null?'--':fearGreedIndex<25?'極度の恐怖':fearGreedIndex<45?'恐怖':fearGreedIndex<55?'中立':fearGreedIndex<75?'強欲':'極度の強欲';
-        const fgColor=fearGreedIndex===null?'#6b7280':fearGreedIndex<25?'#ef4444':fearGreedIndex<45?'#f97316':fearGreedIndex<55?'#d97706':fearGreedIndex<75?'#65a30d':'#005D4D';
-
-        const domPct=totalVal>0?(domVal/totalVal*100).toFixed(1):0;
-        const forPct=totalVal>0?(forVal/totalVal*100).toFixed(1):0;
-        const funPct=totalVal>0?(funVal/totalVal*100).toFixed(1):0;
-
-        const monthNames=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-        const currentMonth=new Date().getMonth();
-
-        // 投資信託テーブル行
-        const funRows=fundsData.map((f,i)=>{
-            const isPos=f.profitRate>=0;
-            const bg=i%2===0?'#f9fafb':'#ffffff';
-            const acMap={'account-nisa-tsumitate':'#fef3c7','account-nisa-growth':'#fce7f3','account-ideco':'#ede9fe','account-tokutei':'#dbeafe'};
-            return `<tr style="background:${bg}">
-                <td style="font-size:11px;word-break:break-all;max-width:220px">${f.fundName}</td>
-                <td style="text-align:center"><span style="background:${acMap[f.accountClass]||'#dbeafe'};padding:3px 7px;border-radius:4px;font-size:10px;white-space:nowrap">${f.accountLabel}</span></td>
-                <td style="text-align:right;font-size:11px">${Math.round(f.quantity).toLocaleString()}口</td>
-                <td style="text-align:right;font-size:11px">¥${Math.round(f.basePrice).toLocaleString()}</td>
-                <td style="text-align:right;font-weight:600;font-size:11px">${fmt(f.marketValue)}</td>
-                <td style="text-align:right;color:${isPos?'#005D4D':'#ef4444'};font-weight:700;font-size:11px">${fmtSign(f.profitLoss)}</td>
-                <td style="text-align:right;color:${isPos?'#005D4D':'#ef4444'};font-weight:700;font-size:11px">${fmtPct(f.profitRate)}</td>
-            </tr>`;
+        const fmt     = v => '¥' + Math.round(Math.abs(v)).toLocaleString('ja-JP');
+        const fmtSign = v => (v >= 0 ? '+' : '-') + fmt(v);
+        const fmtPct  = v => (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+        const today   = new Date().toLocaleDateString('ja-JP', {year:'numeric', month:'long', day:'numeric'});
+        const fgLabel = fearGreedIndex===null?'--':fearGreedIndex<25?'極度の恐怖':fearGreedIndex<45?'恐怖':fearGreedIndex<55?'中立':fearGreedIndex<75?'強欲':'極度の強欲';
+        const fgColor = fearGreedIndex===null?'#6b7280':fearGreedIndex<25?'#ef4444':fearGreedIndex<45?'#f97316':fearGreedIndex<55?'#d97706':fearGreedIndex<75?'#65a30d':'#005D4D';
+        const domPct  = totalVal > 0 ? (domVal / totalVal * 100).toFixed(1) : 0;
+        const forPct  = totalVal > 0 ? (forVal / totalVal * 100).toFixed(1) : 0;
+        const funPct  = totalVal > 0 ? (funVal / totalVal * 100).toFixed(1) : 0;
+        const monthNames   = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+        const currentMonth = new Date().getMonth();
+        const funRows = fundsData.map((f,i) => {
+            const isPos = f.profitRate >= 0, bg = i%2===0?'#f9fafb':'#ffffff';
+            const acMap = {'account-nisa-tsumitate':'#fef3c7','account-nisa-growth':'#fce7f3','account-ideco':'#ede9fe','account-tokutei':'#dbeafe'};
+            return `<tr style="background:${bg}"><td style="font-size:11px;word-break:break-all;max-width:220px">${f.fundName}</td><td style="text-align:center"><span style="background:${acMap[f.accountClass]||'#dbeafe'};padding:3px 7px;border-radius:4px;font-size:10px;white-space:nowrap">${f.accountLabel}</span></td><td style="text-align:right;font-size:11px">${Math.round(f.quantity).toLocaleString()}口</td><td style="text-align:right;font-size:11px">¥${Math.round(f.basePrice).toLocaleString()}</td><td style="text-align:right;font-weight:600;font-size:11px">${fmt(f.marketValue)}</td><td style="text-align:right;color:${isPos?'#005D4D':'#ef4444'};font-weight:700;font-size:11px">${fmtSign(f.profitLoss)}</td><td style="text-align:right;color:${isPos?'#005D4D':'#ef4444'};font-weight:700;font-size:11px">${fmtPct(f.profitRate)}</td></tr>`;
         }).join('');
-
-        // 国内株式（2列）
-        const half=Math.ceil(domesticStocksData.length/2);
-        const domRowRenderer=(s,i)=>{
-            const isPos=s.profitRate>=0;
-            return `<tr style="background:${i%2===0?'#f9fafb':'#fff'}">
-                <td style="text-align:center;color:#6b7280;font-weight:700;font-size:10px;white-space:nowrap">${s.code}</td>
-                <td style="font-size:10px;word-break:break-all">${s.name}</td>
-                <td style="text-align:right;font-weight:600;font-size:10px;white-space:nowrap">${fmt(s.marketValue)}</td>
-                <td style="text-align:right;color:${isPos?'#005D4D':'#ef4444'};font-weight:700;font-size:10px;white-space:nowrap">${fmtPct(s.profitRate)}</td>
-            </tr>`;
+        const half = Math.ceil(domesticStocksData.length / 2);
+        const domRowRenderer = (s,i) => {
+            const isPos = s.profitRate >= 0;
+            return `<tr style="background:${i%2===0?'#f9fafb':'#fff'}"><td style="text-align:center;color:#6b7280;font-weight:700;font-size:10px;white-space:nowrap">${s.code}</td><td style="font-size:10px;word-break:break-all">${s.name}</td><td style="text-align:right;font-weight:600;font-size:10px;white-space:nowrap">${fmt(s.marketValue)}</td><td style="text-align:right;color:${isPos?'#005D4D':'#ef4444'};font-weight:700;font-size:10px;white-space:nowrap">${fmtPct(s.profitRate)}</td></tr>`;
         };
-        const domRowsLeft=domesticStocksData.slice(0,half).map(domRowRenderer).join('');
-        const domRowsRight=domesticStocksData.slice(half).map(domRowRenderer).join('');
-
-        // 外国株式
-        const forRows=foreignStocksData.map((s,i)=>{
-            const isPos=s.profitRate>=0;
-            return `<tr style="background:${i%2===0?'#f9fafb':'#fff'}">
-                <td style="text-align:center;color:#6b7280;font-weight:700;font-size:11px">${s.code}</td>
-                <td style="font-size:11px;word-break:break-all">${s.name}</td>
-                <td style="text-align:right;font-size:11px">${s.quantity.toLocaleString()}</td>
-                <td style="text-align:right;font-size:11px">¥${Math.round(s.avgPrice).toLocaleString()}</td>
-                <td style="text-align:right;font-size:11px">¥${Math.round(s.currentPrice).toLocaleString()}</td>
-                <td style="text-align:right;font-weight:600;font-size:11px">${fmt(s.marketValue)}</td>
-                <td style="text-align:right;color:${isPos?'#005D4D':'#ef4444'};font-weight:700;font-size:11px">${fmtPct(s.profitRate)}</td>
-            </tr>`;
+        const domRowsLeft  = domesticStocksData.slice(0, half).map(domRowRenderer).join('');
+        const domRowsRight = domesticStocksData.slice(half).map(domRowRenderer).join('');
+        const forRows = foreignStocksData.map((s,i) => {
+            const isPos = s.profitRate >= 0;
+            return `<tr style="background:${i%2===0?'#f9fafb':'#fff'}"><td style="text-align:center;color:#6b7280;font-weight:700;font-size:11px">${s.code}</td><td style="font-size:11px;word-break:break-all">${s.name}</td><td style="text-align:right;font-size:11px">${s.quantity.toLocaleString()}</td><td style="text-align:right;font-size:11px">¥${Math.round(s.avgPrice).toLocaleString()}</td><td style="text-align:right;font-size:11px">¥${Math.round(s.currentPrice).toLocaleString()}</td><td style="text-align:right;font-weight:600;font-size:11px">${fmt(s.marketValue)}</td><td style="text-align:right;color:${isPos?'#005D4D':'#ef4444'};font-weight:700;font-size:11px">${fmtPct(s.profitRate)}</td></tr>`;
         }).join('');
-
-        // 配当カレンダーカード
-        const monthCards=monthNames.map((name,idx)=>{
-            const before=monthly[idx],after=before*(1-TAX_RATE),hasDiv=before>0,isCur=idx===currentMonth;
-            const border=isCur?'2px solid #3b82f6':hasDiv?'1.5px solid #005D4D':'1px solid #e5e7eb';
-            return `<div style="border:${border};border-radius:8px;padding:10px;background:${hasDiv?'#f0faf8':'#f9fafb'}">
-                <div style="font-size:12px;font-weight:700;color:${hasDiv?'#005D4D':'#9ca3af'};margin-bottom:5px">
-                    ${name}${isCur?' <span style="color:#3b82f6;font-size:10px">◀今月</span>':''}
-                </div>
-                ${hasDiv?`
-                <div style="font-size:14px;font-weight:800;color:#111827">${fmt(before)}</div>
-                <div style="font-size:10px;color:#9ca3af;margin:2px 0">税引前（推定）</div>
-                <div style="font-size:12px;font-weight:700;color:#005D4D">${fmt(after)}</div>
-                <div style="font-size:10px;color:#9ca3af">受取額（税引後）</div>
-                `:`<div style="font-size:12px;color:#9ca3af;margin-top:6px">配当なし</div>`}
-            </div>`;
+        const monthCards = monthNames.map((name,idx) => {
+            const before = monthly[idx], after = before*(1-TAX_RATE), hasDiv = before>0, isCur = idx===currentMonth;
+            const border = isCur?'2px solid #3b82f6':hasDiv?'1.5px solid #005D4D':'1px solid #e5e7eb';
+            return `<div style="border:${border};border-radius:8px;padding:10px;background:${hasDiv?'#f0faf8':'#f9fafb'}"><div style="font-size:12px;font-weight:700;color:${hasDiv?'#005D4D':'#9ca3af'};margin-bottom:5px">${name}${isCur?' <span style="color:#3b82f6;font-size:10px">◀今月</span>':''}</div>${hasDiv?`<div style="font-size:14px;font-weight:800;color:#111827">${fmt(before)}</div><div style="font-size:10px;color:#9ca3af;margin:2px 0">税引前（推定）</div><div style="font-size:12px;font-weight:700;color:#005D4D">${fmt(after)}</div><div style="font-size:10px;color:#9ca3af">受取額（税引後）</div>`:`<div style="font-size:12px;color:#9ca3af;margin-top:6px">配当なし</div>`}</div>`;
         }).join('');
-
         setP('HTMLを生成中...');
-        await new Promise(r=>setTimeout(r,50));
-
-        const htmlContent=`<!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Noto Sans JP',sans-serif;font-size:12px;color:#1f2937;background:#fff;}
-.page{width:794px;padding:28px 36px;margin:0 auto;background:#fff;}
-.page-break{page-break-before:always;}
-.report-header{background:linear-gradient(135deg,#1e3a5f,#1d4ed8);border-radius:12px;padding:22px 28px;color:#fff;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}
-.report-title{font-size:24px;font-weight:900;line-height:1.2;}
-.report-date{font-size:12px;opacity:.8;margin-top:5px;}
-.fgi-badge{background:rgba(255,255,255,.15);border-radius:10px;padding:10px 16px;text-align:center;}
-.fgi-num{font-size:32px;font-weight:900;color:${fgColor};}
-.fgi-lbl{font-size:11px;opacity:.85;margin-top:2px;font-weight:700;}
-.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
-.sum-card{border-radius:8px;padding:12px 14px;border:1.5px solid #e5e7eb;}
-.sum-card-label{font-size:11px;color:#6b7280;font-weight:600;margin-bottom:6px;}
-.sum-card-value{font-size:17px;font-weight:900;line-height:1.1;}
-.sum-card-sub{font-size:10px;color:#6b7280;margin-top:4px;}
-.alloc-section{margin-bottom:16px;}
-.alloc-title{font-size:12px;font-weight:700;margin-bottom:6px;color:#374151;}
-.alloc-bar{display:flex;height:18px;border-radius:8px;overflow:hidden;}
-.alloc-legend{display:flex;gap:18px;margin-top:6px;font-size:11px;}
-.alloc-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;}
-.sec-hd{border-radius:7px;padding:9px 14px;color:#fff;font-size:13px;font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
-table{width:100%;border-collapse:collapse;}
-th{background:#1e3a5f;color:#fff;padding:7px 8px;font-weight:700;font-size:11px;white-space:nowrap;}
-td{padding:5px 8px;border-bottom:1px solid #f3f4f6;vertical-align:middle;line-height:1.4;}
-tr:last-child td{border-bottom:none;}
-.div-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
-.notice{background:#fffbeb;border:1px solid #f59e0b;border-radius:7px;padding:8px 12px;font-size:11px;color:#92400e;margin:8px 0;line-height:1.6;}
-.footer{margin-top:18px;padding-top:8px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;}
-</style></head><body>
-
-<!-- PAGE 1 -->
+        await new Promise(r => setTimeout(r, 50));
+        const htmlContent = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Noto Sans JP',sans-serif;font-size:12px;color:#1f2937;background:#fff;}.page{width:794px;padding:28px 36px;margin:0 auto;background:#fff;}.page-break{page-break-before:always;}.report-header{background:linear-gradient(135deg,#1e3a5f,#1d4ed8);border-radius:12px;padding:22px 28px;color:#fff;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;}.report-title{font-size:24px;font-weight:900;line-height:1.2;}.report-date{font-size:12px;opacity:.8;margin-top:5px;}.fgi-badge{background:rgba(255,255,255,.15);border-radius:10px;padding:10px 16px;text-align:center;}.fgi-num{font-size:32px;font-weight:900;color:${fgColor};}.fgi-lbl{font-size:11px;opacity:.85;margin-top:2px;font-weight:700;}.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}.sum-card{border-radius:8px;padding:12px 14px;border:1.5px solid #e5e7eb;}.sum-card-label{font-size:11px;color:#6b7280;font-weight:600;margin-bottom:6px;}.sum-card-value{font-size:17px;font-weight:900;line-height:1.1;}.sum-card-sub{font-size:10px;color:#6b7280;margin-top:4px;}.alloc-section{margin-bottom:16px;}.alloc-title{font-size:12px;font-weight:700;margin-bottom:6px;color:#374151;}.alloc-bar{display:flex;height:18px;border-radius:8px;overflow:hidden;}.alloc-legend{display:flex;gap:18px;margin-top:6px;font-size:11px;}.alloc-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;}.sec-hd{border-radius:7px;padding:9px 14px;color:#fff;font-size:13px;font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}table{width:100%;border-collapse:collapse;}th{background:#1e3a5f;color:#fff;padding:7px 8px;font-weight:700;font-size:11px;white-space:nowrap;}td{padding:5px 8px;border-bottom:1px solid #f3f4f6;vertical-align:middle;line-height:1.4;}tr:last-child td{border-bottom:none;}.div-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}.notice{background:#fffbeb;border:1px solid #f59e0b;border-radius:7px;padding:8px 12px;font-size:11px;color:#92400e;margin:8px 0;line-height:1.6;}.footer{margin-top:18px;padding-top:8px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;}</style></head><body>
 <div class="page" id="page1">
-<div class="report-header">
-    <div><div class="report-title">ポートフォリオ<br>総合レポート</div><div class="report-date">${today} 作成</div></div>
-    <div class="fgi-badge"><div style="font-size:11px;opacity:.8;margin-bottom:3px">Fear &amp; Greed Index</div><div class="fgi-num">${fearGreedIndex!==null?fearGreedIndex:'--'}</div><div class="fgi-lbl">${fgLabel}</div></div>
-</div>
-<div class="summary-grid">
-    <div class="sum-card" style="border-left:4px solid #2563eb"><div class="sum-card-label">💎 総資産評価額</div><div class="sum-card-value" style="color:#2563eb">${fmt(totalVal)}</div><div class="sum-card-sub">全保有資産の時価合計</div></div>
-    <div class="sum-card" style="border-left:4px solid ${totalPL>=0?'#005D4D':'#ef4444'}"><div class="sum-card-label">📈 評価損益</div><div class="sum-card-value" style="color:${totalPL>=0?'#005D4D':'#ef4444'}">${fmtSign(totalPL)}</div><div class="sum-card-sub">${fmtPct(totalPLRate)}</div></div>
-    <div class="sum-card" style="border-left:4px solid #005D4D"><div class="sum-card-label">💰 年間配当（税引前）</div><div class="sum-card-value" style="color:#005D4D">${fmt(annualDiv)}</div><div class="sum-card-sub">税引後 ${fmt(annualDivAT)}</div></div>
-    <div class="sum-card" style="border-left:4px solid #7c3aed"><div class="sum-card-label">📊 保有銘柄数</div><div class="sum-card-value" style="color:#7c3aed">${totalItems}銘柄</div><div class="sum-card-sub">国内${domesticStocksData.length} / 外国${foreignStocksData.length} / 投信${fundsData.length}</div></div>
-</div>
-<div class="alloc-section">
-    <div class="alloc-title">資産配分</div>
-    <div class="alloc-bar">
-        <div style="width:${domPct}%;background:#005D4D;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700">${parseFloat(domPct)>5?domPct+'%':''}</div>
-        <div style="width:${forPct}%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700">${parseFloat(forPct)>5?forPct+'%':''}</div>
-        <div style="width:${funPct}%;background:#ec4899;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700">${parseFloat(funPct)>5?funPct+'%':''}</div>
-    </div>
-    <div class="alloc-legend">
-        <div><span class="alloc-dot" style="background:#005D4D"></span>国内株式 ${domPct}% (${fmt(domVal)})</div>
-        <div><span class="alloc-dot" style="background:#3b82f6"></span>外国株式 ${forPct}% (${fmt(forVal)})</div>
-        <div><span class="alloc-dot" style="background:#ec4899"></span>投資信託 ${funPct}% (${fmt(funVal)})</div>
-    </div>
-</div>
-${fundsData.length>0?`
-<div class="sec-hd" style="background:linear-gradient(90deg,#be185d,#ec4899)"><span>📊 投資信託・iDeCo（${fundsData.length}本）</span><span>評価額合計 ${fmt(funVal)}</span></div>
-<table><thead><tr><th style="text-align:left;width:32%">ファンド名</th><th>口座区分</th><th style="text-align:right">口数</th><th style="text-align:right">基準価額</th><th style="text-align:right">評価額</th><th style="text-align:right">評価損益</th><th style="text-align:right">損益率</th></tr></thead><tbody>${funRows}</tbody></table>
-`:''}
+<div class="report-header"><div><div class="report-title">ポートフォリオ<br>総合レポート</div><div class="report-date">${today} 作成</div></div><div class="fgi-badge"><div style="font-size:11px;opacity:.8;margin-bottom:3px">Fear &amp; Greed Index</div><div class="fgi-num">${fearGreedIndex!==null?fearGreedIndex:'--'}</div><div class="fgi-lbl">${fgLabel}</div></div></div>
+<div class="summary-grid"><div class="sum-card" style="border-left:4px solid #2563eb"><div class="sum-card-label">💎 総資産評価額</div><div class="sum-card-value" style="color:#2563eb">${fmt(totalVal)}</div><div class="sum-card-sub">全保有資産の時価合計</div></div><div class="sum-card" style="border-left:4px solid ${totalPL>=0?'#005D4D':'#ef4444'}"><div class="sum-card-label">📈 評価損益</div><div class="sum-card-value" style="color:${totalPL>=0?'#005D4D':'#ef4444'}">${fmtSign(totalPL)}</div><div class="sum-card-sub">${fmtPct(totalPLRate)}</div></div><div class="sum-card" style="border-left:4px solid #005D4D"><div class="sum-card-label">💰 年間配当（税引前）</div><div class="sum-card-value" style="color:#005D4D">${fmt(annualDiv)}</div><div class="sum-card-sub">税引後 ${fmt(annualDivAT)}</div></div><div class="sum-card" style="border-left:4px solid #7c3aed"><div class="sum-card-label">📊 保有銘柄数</div><div class="sum-card-value" style="color:#7c3aed">${totalItems}銘柄</div><div class="sum-card-sub">国内${domesticStocksData.length} / 外国${foreignStocksData.length} / 投信${fundsData.length}</div></div></div>
+<div class="alloc-section"><div class="alloc-title">資産配分</div><div class="alloc-bar"><div style="width:${domPct}%;background:#005D4D;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700">${parseFloat(domPct)>5?domPct+'%':''}</div><div style="width:${forPct}%;background:#3b82f6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700">${parseFloat(forPct)>5?forPct+'%':''}</div><div style="width:${funPct}%;background:#ec4899;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700">${parseFloat(funPct)>5?funPct+'%':''}</div></div><div class="alloc-legend"><div><span class="alloc-dot" style="background:#005D4D"></span>国内株式 ${domPct}% (${fmt(domVal)})</div><div><span class="alloc-dot" style="background:#3b82f6"></span>外国株式 ${forPct}% (${fmt(forVal)})</div><div><span class="alloc-dot" style="background:#ec4899"></span>投資信託 ${funPct}% (${fmt(funVal)})</div></div></div>
+${fundsData.length>0?`<div class="sec-hd" style="background:linear-gradient(90deg,#be185d,#ec4899)"><span>📊 投資信託・iDeCo（${fundsData.length}本）</span><span>評価額合計 ${fmt(funVal)}</span></div><table><thead><tr><th style="text-align:left;width:32%">ファンド名</th><th>口座区分</th><th style="text-align:right">口数</th><th style="text-align:right">基準価額</th><th style="text-align:right">評価額</th><th style="text-align:right">評価損益</th><th style="text-align:right">損益率</th></tr></thead><tbody>${funRows}</tbody></table>`:''}
 <div class="footer"><span>ポートフォリオ総合レポート | ${today}</span><span>1 / 3</span></div>
 </div>
-
-<!-- PAGE 2: 国内株式 -->
 <div class="page page-break" id="page2">
 <div class="sec-hd" style="background:linear-gradient(90deg,#004438,#005D4D)"><span>🏠 国内株式（${domesticStocksData.length}銘柄）</span><span>評価額合計 ${fmt(domVal)}</span></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <table><thead><tr><th style="text-align:center;width:38px">コード</th><th style="text-align:left">銘柄名</th><th style="text-align:right">評価額</th><th style="text-align:right">損益率</th></tr></thead><tbody>${domRowsLeft}</tbody></table>
-    <table><thead><tr><th style="text-align:center;width:38px">コード</th><th style="text-align:left">銘柄名</th><th style="text-align:right">評価額</th><th style="text-align:right">損益率</th></tr></thead><tbody>${domRowsRight}</tbody></table>
-</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><table><thead><tr><th style="text-align:center;width:38px">コード</th><th style="text-align:left">銘柄名</th><th style="text-align:right">評価額</th><th style="text-align:right">損益率</th></tr></thead><tbody>${domRowsLeft}</tbody></table><table><thead><tr><th style="text-align:center;width:38px">コード</th><th style="text-align:left">銘柄名</th><th style="text-align:right">評価額</th><th style="text-align:right">損益率</th></tr></thead><tbody>${domRowsRight}</tbody></table></div>
 <div class="footer"><span>ポートフォリオ総合レポート | ${today}</span><span>2 / 3</span></div>
 </div>
-
-<!-- PAGE 3: 外国株式 + 配当 -->
 <div class="page page-break" id="page3">
-${foreignStocksData.length>0?`
-<div class="sec-hd" style="background:linear-gradient(90deg,#1d4ed8,#3b82f6)"><span>🌎 外国株式（${foreignStocksData.length}銘柄）</span><span>評価額合計 ${fmt(forVal)}</span></div>
-<table><thead><tr><th style="text-align:center">ティッカー</th><th style="text-align:left">銘柄名</th><th style="text-align:right">保有数</th><th style="text-align:right">平均取得</th><th style="text-align:right">現在値</th><th style="text-align:right">評価額</th><th style="text-align:right">損益率</th></tr></thead><tbody>${forRows}</tbody></table>
-<div style="margin-bottom:14px"></div>`:''}
+${foreignStocksData.length>0?`<div class="sec-hd" style="background:linear-gradient(90deg,#1d4ed8,#3b82f6)"><span>🌎 外国株式（${foreignStocksData.length}銘柄）</span><span>評価額合計 ${fmt(forVal)}</span></div><table><thead><tr><th style="text-align:center">ティッカー</th><th style="text-align:left">銘柄名</th><th style="text-align:right">保有数</th><th style="text-align:right">平均取得</th><th style="text-align:right">現在値</th><th style="text-align:right">評価額</th><th style="text-align:right">損益率</th></tr></thead><tbody>${forRows}</tbody></table><div style="margin-bottom:14px"></div>`:''}
 <div class="sec-hd" style="background:linear-gradient(90deg,#003328,#005D4D)"><span>💰 月別配当金カレンダー（推定）</span><span>年間合計 ${fmt(monthly.reduce((s,v)=>s+v,0))} → 税引後 ${fmt(monthly.reduce((s,v)=>s+v,0)*(1-TAX_RATE))}</span></div>
 <div class="notice">⚠ 本データは「1株配当額×保有株数」で算出（2025〜2026予想値使用）。配当予想はIR発表により変動します。正確な金額は証券会社の配当通知書でご確認ください。</div>
 <div class="div-grid">${monthCards}</div>
 <div class="footer"><span>ポートフォリオ総合レポート | ${today}</span><span>3 / 3</span></div>
 </div>
-
 </body></html>`;
-
         setP('HTMLレンダリング中...');
-        await new Promise(r=>setTimeout(r,50));
-
-        const iframe=document.createElement('iframe');
-        iframe.style.cssText='position:fixed;left:-9999px;top:0;width:794px;height:1123px;border:none;visibility:hidden;';
+        await new Promise(r => setTimeout(r, 50));
+        const iframe = document.createElement('iframe');
+        iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;height:1123px;border:none;visibility:hidden;';
         document.body.appendChild(iframe);
         iframe.contentDocument.open();
         iframe.contentDocument.write(htmlContent);
         iframe.contentDocument.close();
-
-        // フォント読み込み待機
-        await new Promise(r=>setTimeout(r,1800));
-
-        const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-        const A4W=210, A4H=297;
-        const pageIds=['page1','page2','page3'];
-
-        for(let i=0;i<pageIds.length;i++){
+        await new Promise(r => setTimeout(r, 1800));
+        const doc = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+        const A4W = 210, A4H = 297;
+        const pageIds = ['page1','page2','page3'];
+        for (let i = 0; i < pageIds.length; i++) {
             setP(`ページ ${i+1}/3 をキャプチャ中...`);
-            await new Promise(r=>setTimeout(r,100));
-            const pageEl=iframe.contentDocument.getElementById(pageIds[i]);
-            if(!pageEl) continue;
-            const canvas=await html2canvas(pageEl,{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false,windowWidth:794});
-            const imgData=canvas.toDataURL('image/jpeg',0.95);
-            const scaledH=(canvas.height/canvas.width)*A4W;
-            if(i>0) doc.addPage();
-            if(scaledH<=A4H*1.05){
-                doc.addImage(imgData,'JPEG',0,0,A4W,scaledH);
+            await new Promise(r => setTimeout(r, 100));
+            const pageEl = iframe.contentDocument.getElementById(pageIds[i]);
+            if (!pageEl) continue;
+            const canvas   = await html2canvas(pageEl, {scale:2, useCORS:true, allowTaint:true, backgroundColor:'#ffffff', logging:false, windowWidth:794});
+            const imgData  = canvas.toDataURL('image/jpeg', 0.95);
+            const scaledH  = (canvas.height / canvas.width) * A4W;
+            if (i > 0) doc.addPage();
+            if (scaledH <= A4H * 1.05) {
+                doc.addImage(imgData, 'JPEG', 0, 0, A4W, scaledH);
             } else {
-                let remainH=scaledH,srcY=0,pageIdx=0;
-                while(remainH>0){
-                    const sliceH=Math.min(A4H,remainH);
-                    const srcSliceH=(sliceH/scaledH)*canvas.height;
-                    const sc=document.createElement('canvas');
-                    sc.width=canvas.width;sc.height=srcSliceH;
-                    sc.getContext('2d').drawImage(canvas,0,srcY,canvas.width,srcSliceH,0,0,canvas.width,srcSliceH);
-                    const si=sc.toDataURL('image/jpeg',0.95);
-                    if(pageIdx>0) doc.addPage();
-                    doc.addImage(si,'JPEG',0,0,A4W,sliceH);
-                    srcY+=srcSliceH;remainH-=sliceH;pageIdx++;
+                let remainH = scaledH, srcY = 0, pageIdx = 0;
+                while (remainH > 0) {
+                    const sliceH    = Math.min(A4H, remainH);
+                    const srcSliceH = (sliceH / scaledH) * canvas.height;
+                    const sc = document.createElement('canvas');
+                    sc.width = canvas.width; sc.height = srcSliceH;
+                    sc.getContext('2d').drawImage(canvas, 0, srcY, canvas.width, srcSliceH, 0, 0, canvas.width, srcSliceH);
+                    const si = sc.toDataURL('image/jpeg', 0.95);
+                    if (pageIdx > 0) doc.addPage();
+                    doc.addImage(si, 'JPEG', 0, 0, A4W, sliceH);
+                    srcY += srcSliceH; remainH -= sliceH; pageIdx++;
                 }
             }
         }
         document.body.removeChild(iframe);
         setP('PDFを保存中...');
         doc.save(`portfolio_report_${new Date().toISOString().slice(0,10)}.pdf`);
-
-    } catch(err){
-        console.error('PDF生成エラー:',err);
-        alert('PDF生成中にエラーが発生しました。\n'+err.message);
+    } catch(err) {
+        console.error('PDF生成エラー:', err);
+        alert('PDF生成中にエラーが発生しました。\n' + err.message);
     } finally {
         document.body.removeChild(overlay);
-        btn.disabled=false;
-        btn.innerHTML='<span>📄</span> PDFレポート出力';
+        btn.disabled = false;
+        btn.innerHTML = '<span>📄</span> PDFレポート出力';
     }
 }
 </script>
